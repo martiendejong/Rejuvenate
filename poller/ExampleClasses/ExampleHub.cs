@@ -1,14 +1,16 @@
-﻿using System;
+﻿using Rejuvenate;
+using RejuvenatingExample.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web;
 
-namespace poller
+namespace RejuvenatingExample
 {
-    public class MyHub : PollerHub
+    public class ExampleHub : RejuvenatingHub
     {
-        public static PollerExampleContext DbContext;
+        public static ExampleContext DbContext;
 
         public void update()
         {

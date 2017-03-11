@@ -1,8 +1,8 @@
 ﻿using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(poller.Startup))]
-namespace poller
+[assembly: OwinStartupAttribute(typeof(RejuvenatingExample.Startup))]
+namespace RejuvenatingExample
 {
     public partial class Startup
     {

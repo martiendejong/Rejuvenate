@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace poller.Models
+namespace RejuvenatingExample.Models
 {
     public class ExternalLoginConfirmationViewModel
     {

@@ -10,9 +10,9 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using poller.Models;
+using RejuvenatingExample.Models;
 
-namespace poller
+namespace RejuvenatingExample
 {
     public class EmailService : IIdentityMessageService
     {

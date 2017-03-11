@@ -5,7 +5,7 @@ using System.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
-namespace poller
+namespace Rejuvenate
 {
     public interface ISignalRClient
     {
@@ -22,25 +22,10 @@ namespace poller
         }
     }
 
-    public class AwarenessClient : SignalRClient
+    public class RejuvenatingClient : SignalRClient
     {
-        public AwarenessClient(string connectionId) : base(connectionId)
+        public RejuvenatingClient(string connectionId) : base(connectionId)
         {
-        }
-    }
-
-    public interface ISignalRClients
-    {
-        List<AwarenessClient> AwarenessClients { get; }
-    }
-
-    public class SignalRClients : ISignalRClients
-    {
-        public List<AwarenessClient> AwarenessClients { get; }
-
-        public SignalRClients()
-        {
-            AwarenessClients = new List<AwarenessClient>();
         }
     }
 }

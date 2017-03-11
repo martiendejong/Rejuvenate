@@ -8,9 +8,9 @@ using System.Web.Mvc;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using poller.Models;
+using RejuvenatingExample.Models;
 
-namespace poller.Controllers
+namespace RejuvenatingExample.Controllers
 {
     [Authorize]
     public class AccountController : Controller

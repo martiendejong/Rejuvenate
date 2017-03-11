@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.SignalR;
+using RejuvenatingExample.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -6,34 +7,34 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace poller.Controllers
+namespace RejuvenatingExample.Controllers
 {
     public class HomeController : Controller
     {
-        public PollerExampleContext DbContext = new PollerExampleContext();
+        public ExampleContext DbContext = new ExampleContext();
 
         public ActionResult Index()
         {
             // todo make di
-            MyHub.DbContext = DbContext;
-            IEnumerable<Item> query = DbContext.ChangeAwareItems.Where(i => i.Name.Length < 10).AddPollingFunction(PublishItems);// (type, pollerId, state, entries) => { PublishItems(type, pollerId, state, entries); });
+            ExampleHub.DbContext = DbContext;
+            IEnumerable<Item> query = DbContext.ChangeAwareItems.Where(i => i.Name.Length < 10).RejuvenateQuery(PublishItems);
             return View(query);
         }
 
         // todo refactor away
-        public void PublishItems(Type type, int pollerId, EntityState state, IEnumerable<Item> entries)
+        public void PublishItems(Type type, int rejuvenatorId, EntityState state, IEnumerable<Item> entries)
         {
-            var context = GlobalHost.ConnectionManager.GetHubContext<MyHub>();
+            var context = GlobalHost.ConnectionManager.GetHubContext<ExampleHub>();
             switch (state)
             {
                 case EntityState.Added:
-                    context.Clients.All.itemsAdded(type, pollerId, entries);
+                    context.Clients.All.itemsAdded(type, rejuvenatorId, entries);
                     break;
                 case EntityState.Deleted:
-                    context.Clients.All.itemsRemoved(type, pollerId, entries);
+                    context.Clients.All.itemsRemoved(type, rejuvenatorId, entries);
                     break;
                 case EntityState.Modified:
-                    context.Clients.All.itemsUpdated(type, pollerId, entries);
+                    context.Clients.All.itemsUpdated(type, rejuvenatorId, entries);
                     break;
             }
         }

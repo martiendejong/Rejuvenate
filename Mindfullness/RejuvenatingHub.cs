@@ -7,7 +7,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
 
-namespace poller
+namespace Rejuvenate
 {
     /*
                 // todo DI gebruiken 
@@ -19,14 +19,14 @@ namespace poller
                 */
 
     // This is where commands from the webclient (player ui) are executed
-    public class PollerHub : Hub
+    public class RejuvenatingHub : Hub
     {
-        public static ISignalRClients SignalRClients = new SignalRClients();
-  
-        public void RegisterAwarenessClient(params int[] pollerIds)
+        public static List<RejuvenatingClient> RejuvenatingClients = new List<RejuvenatingClient>();
+
+        public void RegisterRejuvenatingClient(params int[] rejuvenatorId)
         {
-            AwarenessClient client = new AwarenessClient(Context.ConnectionId);
-            SignalRClients.AwarenessClients.Add(client);
+            RejuvenatingClient client = new RejuvenatingClient(Context.ConnectionId);
+            RejuvenatingClients.Add(client);
         }
     }
 }

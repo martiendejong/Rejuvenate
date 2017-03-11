@@ -7,8 +7,8 @@
     <ProjectGuid>{7E0885AA-9884-4658-A1E9-8AAE0286ECEE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Mindfullness</RootNamespace>
-    <AssemblyName>Mindfullness</AssemblyName>
+    <RootNamespace>Rejuvenate</RootNamespace>
+    <AssemblyName>Rejuvenate</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -77,14 +77,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PollerContext.cs" />
-    <Compile Include="PollerHub.cs" />
+    <Compile Include="ClientRejuvenator.cs" />
+    <Compile Include="ExpressionHelpers.cs" />
+    <Compile Include="Interfaces.cs" />
+    <Compile Include="RejuvenatingContext.cs" />
+    <Compile Include="RejuvenatingHub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SignalRClients.cs" />
+    <Compile Include="RejuvenatingClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <Compile Include="RejuvenatingContext.RejuvenatingQueriable.cs" />
+    <Compile Include="RejuvenatingContext.Rejuvenator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />

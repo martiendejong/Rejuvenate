@@ -5,9 +5,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
-using poller.Models;
+using RejuvenatingExample.Models;
 
-namespace poller
+namespace RejuvenatingExample
 {
     public partial class Startup
     {

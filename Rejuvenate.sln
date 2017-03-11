@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "poller", "poller\poller.csproj", "{C0E234E8-E3D7-4291-AD7E-7B3BCEE106C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RejuvenatingExample", "poller\RejuvenatingExample.csproj", "{C0E234E8-E3D7-4291-AD7E-7B3BCEE106C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mindfullness", "Mindfullness\Mindfullness.csproj", "{7E0885AA-9884-4658-A1E9-8AAE0286ECEE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rejuvenate", "Mindfullness\Rejuvenate.csproj", "{7E0885AA-9884-4658-A1E9-8AAE0286ECEE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

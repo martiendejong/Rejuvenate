@@ -1,4 +1,5 @@
-﻿@model IEnumerable<Item>
+﻿@using RejuvenatingExample.Models
+@model IEnumerable<Item>
 
 @{
     ViewBag.Title = "Awareness";
@@ -50,9 +51,9 @@
         
         $(function () {
             // Declare a proxy to reference the hub.
-            myHub = $.connection.myHub;
+            myHub = $.connection.exampleHub;
 
-            myHub.client.itemsAdded = function (type, pollerId, items)
+            myHub.client.itemsAdded = function (type, rejuvenatorId, items)
             {
                 items.forEach(function (item, index)
                 {
@@ -61,7 +62,7 @@
                 });
             }
 
-            myHub.client.itemsRemoved = function (type, pollerId, items) {
+            myHub.client.itemsRemoved = function (type, rejuvenatorId, items) {
                 items.forEach(function (item, index)
                 {
                     var selector = "#item" + item.Id;
@@ -69,7 +70,7 @@
                 });
             }
 
-            myHub.client.itemsUpdated = function (type, pollerId, items) {
+            myHub.client.itemsUpdated = function (type, rejuvenatorId, items) {
                 items.forEach(function (item, index)
                 {
                     var selector = "#item" + item.Id;
@@ -79,7 +80,7 @@
 
             // Start the connection.
             $.connection.hub.start().done(function () {
-                myHub.server.registerAwarenessClient(1);
+                myHub.server.registerRejuvenatingClient(1);
             });
         });
 

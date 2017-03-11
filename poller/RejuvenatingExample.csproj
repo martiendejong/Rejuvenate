@@ -13,8 +13,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>poller</RootNamespace>
-    <AssemblyName>poller</AssemblyName>
+    <RootNamespace>RejuvenatingExample</RootNamespace>
+    <AssemblyName>RejuvenatingExample</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
@@ -178,12 +178,13 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="ExampleClasses\MyHub.cs" />
-    <Compile Include="ExampleClasses\PollerExampleContext.cs" />
+    <Compile Include="ExampleClasses\ExampleHub.cs" />
+    <Compile Include="ExampleClasses\ExampleContext.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\ExampleEntities.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -259,9 +260,9 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mindfullness\Mindfullness.csproj">
+    <ProjectReference Include="..\Mindfullness\Rejuvenate.csproj">
       <Project>{7e0885aa-9884-4658-a1e9-8aae0286ecee}</Project>
-      <Name>Mindfullness</Name>
+      <Name>Rejuvenate</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
