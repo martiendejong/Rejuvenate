@@ -186,10 +186,7 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <None Include="PollerHub.cs.b" />
-    <None Include="PollerContext.cs.b" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <None Include="SignalRClients.cs.b" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

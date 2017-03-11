@@ -10,20 +10,25 @@ namespace poller
     {
         public virtual DbSet<Item> Items { get; set; }
 
-        public ChangeAwareQueriable<Item> ChangeAwareItems { get { return new ChangeAwareQueriable<Item>(Items) { DbContext = this }; } }
-
-        override protected void SaveChangesStart()
+        // declare the change aware db query
+        public ChangeAwareQueriable<Item> ChangeAwareItems
         {
-            ChangeTracker.DetectChanges();
-            // todo make T
-            var itemEntries = ChangeTracker.Entries<Item>();
-            SetupPollers(itemEntries);
+            get
+            {
+                return new ChangeAwareQueriable<Item>(Items, this);
+            }
         }
 
-        override protected void SaveChangesCompleted()
+        // declare the polling executors for the change aware entities
+        override protected List<IPollerExecutor> Executors
         {
-            // todo make T
-            ExecutePollers<Item>();
+            get
+            {
+                return new List<IPollerExecutor>
+                {
+                    new PollerExecutor<Item>(ChangeTracker, this)
+                };
+            }
         }
     }
 }

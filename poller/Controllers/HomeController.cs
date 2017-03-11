@@ -16,14 +16,13 @@ namespace poller.Controllers
         {
             // todo make di
             MyHub.DbContext = DbContext;
-            IEnumerable<Item> query = DbContext.ChangeAwareItems.Where(i => i.Id < 10).AddPollingFunction((type, pollerId, state, entries) => { PublishItems(type, pollerId, state, entries); });
+            IEnumerable<Item> query = DbContext.ChangeAwareItems.Where(i => i.Name.Length < 10).AddPollingFunction((type, pollerId, state, entries) => { PublishItems(type, pollerId, state, entries); });
             return View(query);
         }
 
         // todo refactor away
         public void PublishItems(Type type, int pollerId, EntityState state, IEnumerable<Item> entries)
         {
-
             var context = GlobalHost.ConnectionManager.GetHubContext<MyHub>();
             switch (state)
             {
