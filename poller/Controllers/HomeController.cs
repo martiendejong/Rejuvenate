@@ -16,7 +16,7 @@ namespace poller.Controllers
         {
             // todo make di
             MyHub.DbContext = DbContext;
-            IEnumerable<Item> query = DbContext.ChangeAwareItems.Where(i => i.Name.Length < 10).AddPollingFunction((type, pollerId, state, entries) => { PublishItems(type, pollerId, state, entries); });
+            IEnumerable<Item> query = DbContext.ChangeAwareItems.Where(i => i.Name.Length < 10).AddPollingFunction(PublishItems);// (type, pollerId, state, entries) => { PublishItems(type, pollerId, state, entries); });
             return View(query);
         }
 
@@ -28,15 +28,12 @@ namespace poller.Controllers
             {
                 case EntityState.Added:
                     context.Clients.All.itemsAdded(type, pollerId, entries);
-                    //Clients.All.itemsAdded(type, pollerId, entries);
                     break;
                 case EntityState.Deleted:
                     context.Clients.All.itemsRemoved(type, pollerId, entries);
-                    //Clients.All.itemsRemoved(type, pollerId, entries);
                     break;
                 case EntityState.Modified:
                     context.Clients.All.itemsUpdated(type, pollerId, entries);
-                    //Clients.All.itemsUpdated(type, pollerId, entries);
                     break;
             }
         }

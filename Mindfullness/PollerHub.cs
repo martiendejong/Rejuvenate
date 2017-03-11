@@ -22,28 +22,6 @@ namespace poller
     public class PollerHub : Hub
     {
         public static ISignalRClients SignalRClients = new SignalRClients();
-
-        // todo place in separate class
-        public void PublishItems(Type type, int pollerId, EntityState state, IEnumerable<Item> entries)
-        {
-
-            //var context = GlobalHost.ConnectionManager.GetHubContext("");
-            switch (state)
-            {
-                case EntityState.Added:
-                    //context.Clients.All.itemsAdded(type, pollerId, entries);
-                    Clients.All.itemsAdded(type, pollerId, entries);
-                    break;
-                case EntityState.Deleted:
-                    //context.Clients.All.itemsRemoved(type, pollerId, entries);
-                    Clients.All.itemsRemoved(type, pollerId, entries);
-                    break;
-                case EntityState.Modified:
-                    //context.Clients.All.itemsUpdated(type, pollerId, entries);
-                    Clients.All.itemsUpdated(type, pollerId, entries);
-                    break;
-            }
-        }
   
         public void RegisterAwarenessClient(params int[] pollerIds)
         {
