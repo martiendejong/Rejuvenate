@@ -260,7 +260,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Mindfullness\Rejuvenate.csproj">
+    <ProjectReference Include="..\Rejuvenate\Rejuvenate.csproj">
       <Project>{7e0885aa-9884-4658-a1e9-8aae0286ecee}</Project>
       <Name>Rejuvenate</Name>
     </ProjectReference>
