@@ -10,8 +10,23 @@ namespace RejuvenatingExample
 {
     public class ExampleHub : RejuvenatingHub
     {
-        public static ExampleContext DbContext;
+        public static IExampleContext DbContext;
 
+        public static Dictionary<string, string> UserNameByConnectionId = new Dictionary<string, string>();
+
+        public void hostGame()
+        {
+            DbContext.Games.Add(new Game(UserNameByConnectionId[Context.ConnectionId]));
+            DbContext.SaveChanges();
+        }
+
+        public void setUser(string name)
+        {
+            UserNameByConnectionId[Context.ConnectionId] = name;
+        }
+
+
+        // first example functions
         public void update()
         {
             var item = DbContext.Items.First();

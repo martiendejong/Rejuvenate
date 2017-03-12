@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.SignalR.Hubs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -7,13 +8,23 @@ using System.Threading.Tasks;
 
 namespace Rejuvenate
 {
-    public interface IClientRejuvenator<T> where T : class
+    public interface IDbContext
+    {
+        int SaveChanges();
+    }
+
+    public interface IRejuvenatingDbContext : IDbContext
+    {
+        
+    }
+
+    public interface IClientRejuvenator<EntityType> where EntityType : class
     {
         int Id { get; set; }
 
-        Expression<Func<T, bool>> Expression { get; set; }
+        Expression<Func<EntityType, bool>> Expression { get; set; }
 
-        RejuvenateClientCallback<T> Rejuvenate { get; set; }
+        RejuvenateClientCallback<EntityType> Rejuvenate { get; set; }
     }
 
     public interface IEntityRejuvenator
@@ -23,11 +34,34 @@ namespace Rejuvenate
         void Rejuvenate();
     }
 
-    public interface IRejuvenatingQueryable<T> where T : class
+    public interface IRejuvenatingQueryable<EntityType> where EntityType : class
     {
-        IRejuvenatingQueryable<T> Where(Expression<Func<T, bool>> expression);
 
-        IQueryable<T> RejuvenateQuery(RejuvenateClientCallback<T> publish);
+        /// <summary>
+        /// Same as with IQueryable
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        IRejuvenatingQueryable<EntityType> Where(Expression<Func<EntityType, bool>> expression);
+
+        /// <summary>
+        /// Adds an agent to the query that publishes changes to a callback function. Then returns the query.
+        /// </summary>
+        /// <param name="clientCallback">The callback function that is be called when publishing the changed items.</param>
+        /// <returns>The generated IClientRejuvenator.</returns>
+        IClientRejuvenator<EntityType> RejuvenateQuery(RejuvenateClientCallback<EntityType> publish);
+
+        /// <summary>
+        /// Adds an agent to the query that publishes changes to the SignalR clients. Then returns the query.
+        /// </summary>
+        /// <returns>The generated IClientRejuvenator.</returns>
+        IClientRejuvenator<EntityType> RejuvenateQuery<HubType>() where HubType : IHub;
+
+        /// <summary>
+        /// Get the original LINQ IQueryable object
+        /// </summary>
+        /// <returns>The original Queryable.</returns>
+        IQueryable<EntityType> AsQueryable();
     }
 
 }

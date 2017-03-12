@@ -1,5 +1,5 @@
 ﻿@using RejuvenatingExample.Models
-@model IEnumerable<Item>
+@model IEnumerable<Game>
 
 @{
     ViewBag.Title = "Homepage";
@@ -8,19 +8,16 @@
 <h2>Homepage</h2>
 
 <div id="items">
-    @foreach (var item in Model)
+    @foreach (var game in Model)
     {
-        var id = "item" + item.Id;
+        var id = "item" + game.Id;
         <p id="@id">
-            @item.Name
+            @game.Host (@game.Players.Count())
         </p>
     }
 </div>
 
-<input type="button" onclick="add()" value="Add" />
-<input type="button" onclick="remove()" value="Remove" />
-<input type="button" onclick="update()" value="Update" />
-
+<input type="button" onclick="hostGame()" value="Host Game" />
 
 @section  scripts
      {
@@ -34,21 +31,11 @@
 
         var myHub;
 
-        function add()
+        function hostGame()
         {
-            myHub.server.add();
+            myHub.server.hostGame();
         }
 
-        function remove()
-        {
-            myHub.server.remove();
-        }
-
-        function update()
-        {
-            myHub.server.update();
-        }
-        
         $(function () {
             // Declare a proxy to reference the hub.
             myHub = $.connection.exampleHub;
@@ -57,7 +44,7 @@
             {
                 items.forEach(function (item, index)
                 {
-                    var html = "<p id='item" + item.Id + "'>" + item.Name + "</p>";
+                    var html = "<p id='item" + item.Id + "'>" + item.Host + " (" + item.Players.length + ")</p>";
                     $("#items").append(html);
                 });
             }
@@ -80,7 +67,9 @@
 
             // Start the connection.
             $.connection.hub.start().done(function () {
+                // todo make this safe and use a token so it cant be meddled with
                 myHub.server.registerRejuvenatingClient([@ViewBag.rejuvenatorId]);
+                myHub.server.setUser("@ViewBag.UserEmail");
             });
         });
 

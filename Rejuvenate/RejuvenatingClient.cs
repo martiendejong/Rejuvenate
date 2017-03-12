@@ -22,10 +22,18 @@ namespace Rejuvenate
         }
     }
 
-    public class RejuvenatingClient : SignalRClient
+    public interface IRejuvenatingClient : ISignalRClient
     {
+        List<int> RejuvenatorIds { get; set; }
+    }
+
+    public class RejuvenatingClient : SignalRClient, IRejuvenatingClient
+    {
+        public List<int> RejuvenatorIds { get; set; }
+
         public RejuvenatingClient(string connectionId) : base(connectionId)
         {
+            RejuvenatorIds = new List<int>();
         }
     }
 }

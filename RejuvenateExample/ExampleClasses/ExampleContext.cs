@@ -10,7 +10,18 @@ using System.Web;
 
 namespace RejuvenatingExample
 {
-    public class ExampleContext : RejuvenatingDbContext
+    public interface IExampleContext : IRejuvenatingDbContext
+    {
+        DbSet<Item> Items { get; }
+
+        DbSet<Game> Games { get; }
+
+        IRejuvenatingQueryable<Item> RejuvenatingItems { get; }
+
+        IRejuvenatingQueryable<Game> RejuvenatingGames { get; }
+    }
+
+    public class ExampleContext : RejuvenatingDbContext, IExampleContext
     {
         #region Regular DbContext
 
@@ -21,16 +32,26 @@ namespace RejuvenatingExample
 
         public virtual DbSet<Item> Items { get; set; }
 
+        public virtual DbSet<Game> Games { get; set; }
+
         #endregion
 
         #region RejuvenatingDbContext
 
         // declare the change aware db query
-        public IRejuvenatingQueryable<Item> ChangeAwareItems
+        public IRejuvenatingQueryable<Item> RejuvenatingItems
         {
             get
             {
                 return new RejuvenatingQueryable<Item>(Items, this);
+            }
+        }
+
+        public IRejuvenatingQueryable<Game> RejuvenatingGames
+        {
+            get
+            {
+                return new RejuvenatingQueryable<Game>(Games, this);
             }
         }
 
@@ -41,7 +62,8 @@ namespace RejuvenatingExample
             {
                 return new List<IEntityRejuvenator>
                 {
-                    GetRejuvenator<Item>()
+                    GetRejuvenator<Item>(),
+                    GetRejuvenator<Game>()
                 };
             }
         }

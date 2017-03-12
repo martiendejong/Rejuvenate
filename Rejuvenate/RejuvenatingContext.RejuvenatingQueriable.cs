@@ -5,12 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.SignalR.Hubs;
 
 namespace Rejuvenate
 {
-    public abstract partial class RejuvenatingDbContext : DbContext
+    public abstract partial class RejuvenatingDbContext
     {
-        public class RejuvenatingQueryable<T> : IRejuvenatingQueryable<T> where T : class
+        public class RejuvenatingQueryable<EntityType> : IRejuvenatingQueryable<EntityType> where EntityType : class
         {
             #region Public
 
@@ -19,29 +20,42 @@ namespace Rejuvenate
             /// </summary>
             /// <param name="dbSet">The DbSet where the query originates.</param>
             /// <param name="dbContext">The DbContext where the query will be executed.</param>
-            public RejuvenatingQueryable(IDbSet<T> dbSet, RejuvenatingDbContext dbContext) : this((IQueryable<T>)dbSet, dbContext) { }
+            public RejuvenatingQueryable(IDbSet<EntityType> dbSet, RejuvenatingDbContext dbContext) : this((IQueryable<EntityType>)dbSet, dbContext) { }
 
-            /// <summary>
-            /// Same as with IQueryable
-            /// </summary>
-            /// <param name="expression"></param>
-            /// <returns></returns>
-            public IRejuvenatingQueryable<T> Where(Expression<Func<T, bool>> expression)
+            public IRejuvenatingQueryable<EntityType> Where(Expression<Func<EntityType, bool>> expression)
             {
-                return new RejuvenatingQueryable<T>(OriginalQueryable.Where(expression), DbContext, And(expression));
+                return new RejuvenatingQueryable<EntityType>(OriginalQueryable.Where(expression), DbContext, And(expression));
             }
 
-            /// <summary>
-            /// Adds an agent to the query that monitors and publishes changes to the client. Then returns the query.
-            /// </summary>
-            /// <param name="clientCallback">The callback function that is be called when publishing the changed items.</param>
-            /// <returns>The internal LINQ query.</returns>
-            public IQueryable<T> RejuvenateQuery(RejuvenateClientCallback<T> clientCallback)
+            public IClientRejuvenator<EntityType> RejuvenateQuery(RejuvenateClientCallback<EntityType> clientCallback)
             {
-                IClientRejuvenator<T> rejuvenator = new ClientRejuvenator<T>();
-                rejuvenator.Expression = Expression;
-                rejuvenator.Rejuvenate = clientCallback;
-                DbContext.RegisterClientRejuvenator(rejuvenator);
+                var rejuvenator = DbContext.GetClientRejuvenator(Expression, clientCallback);
+                if (rejuvenator == null)
+                {
+                    rejuvenator = new ClientRejuvenator<EntityType>();
+                    rejuvenator.Expression = Expression;
+                    rejuvenator.Rejuvenate = clientCallback;
+                    DbContext.RegisterClientRejuvenator(rejuvenator);
+                }
+                return rejuvenator;
+            }
+
+            public IClientRejuvenator<EntityType> RejuvenateQuery<HubType>() where HubType : IHub
+            {
+                var rejuvenator = DbContext.GetClientRejuvenator<EntityType, HubType>(Expression);
+                if (rejuvenator == null)
+                {
+                    rejuvenator = new ClientRejuvenator<EntityType>();
+                    rejuvenator.Expression = Expression;
+                    var signalRHubRejuvenator = new SignalRHubRejuvenator<HubType>();
+                    rejuvenator.Rejuvenate = signalRHubRejuvenator.Rejuvenate;
+                    DbContext.RegisterClientRejuvenator(rejuvenator);
+                }
+                return rejuvenator;
+            }
+
+            public IQueryable<EntityType> AsQueryable()
+            {
                 return OriginalQueryable;
             }
 
@@ -49,24 +63,28 @@ namespace Rejuvenate
 
             #region Protected
 
-            protected IQueryable<T> OriginalQueryable;
+            protected IQueryable<EntityType> OriginalQueryable;
 
             protected RejuvenatingDbContext DbContext;
 
-            protected Expression<Func<T, bool>> Expression;
+            protected Expression<Func<EntityType, bool>> Expression;
 
-            protected RejuvenatingQueryable(IQueryable<T> originalQueryable, RejuvenatingDbContext dbContext)
+            #region Constructors
+
+            protected RejuvenatingQueryable(IQueryable<EntityType> originalQueryable, RejuvenatingDbContext dbContext)
             {
                 OriginalQueryable = originalQueryable;
                 DbContext = dbContext;
             }
 
-            protected RejuvenatingQueryable(IQueryable<T> originalQueryable, RejuvenatingDbContext dbContext, Expression<Func<T, bool>> expression) : this(originalQueryable, dbContext)
+            protected RejuvenatingQueryable(IQueryable<EntityType> originalQueryable, RejuvenatingDbContext dbContext, Expression<Func<EntityType, bool>> expression) : this(originalQueryable, dbContext)
             {
                 Expression = expression;
             }
 
-            protected Expression<Func<T, bool>> And(Expression<Func<T, bool>> expression)
+            #endregion
+
+            protected Expression<Func<EntityType, bool>> And(Expression<Func<EntityType, bool>> expression)
             {
                 return Expression == null ? expression : Expression.And(expression);
             }

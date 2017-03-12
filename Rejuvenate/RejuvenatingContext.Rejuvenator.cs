@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Rejuvenate
 {
-    public abstract partial class RejuvenatingDbContext : DbContext
+    public abstract partial class RejuvenatingDbContext
     {
-        protected class EntityRejuvenator<T> : IEntityRejuvenator where T : class, new()
+        protected class EntityRejuvenator<EntityType> : IEntityRejuvenator where EntityType : class, new()
         {
             public DbChangeTracker ChangeTracker;
             public RejuvenatingDbContext DbContext;
@@ -23,12 +23,12 @@ namespace Rejuvenate
 
             public void PrepareRejuvenation()
             {
-                DbContext.PrepareRejuvenation<T>();
+                DbContext.PrepareRejuvenation<EntityType>();
             }
 
             public void Rejuvenate()
             {
-                DbContext.Rejuvenate<T>();
+                DbContext.Rejuvenate<EntityType>();
             }
         }
     }

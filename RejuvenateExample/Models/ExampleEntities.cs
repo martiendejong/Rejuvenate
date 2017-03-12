@@ -18,4 +18,26 @@ namespace RejuvenatingExample.Models
     {
         public string Name { get; set; }
     }
+
+    public class Game : EntityWithNumericalKey
+    {
+        public string Name { get; set; }
+        
+        [MinLength(1)]
+        public string Host { get; set; }
+
+        public List<string> Players { get; set; }
+
+        public Game()
+        {
+            Players = new List<string>();
+        }
+
+        public Game(string host)
+        {
+            Host = host;
+            Players = new List<string>();
+            Players.Add(host);
+        }
+    }
 }

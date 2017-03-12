@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNet.SignalR.Hubs;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -17,7 +18,7 @@ using System.Xml.Serialization;
 
 namespace Rejuvenate
 {
-    public abstract partial class RejuvenatingDbContext : DbContext
+    public abstract partial class RejuvenatingDbContext : DbContext, IRejuvenatingDbContext
     {
         #region Public
 
@@ -97,6 +98,24 @@ namespace Rejuvenate
 
         #endregion
 
+        private IClientRejuvenator<EntityType> GetClientRejuvenator<EntityType, HubType>(Expression<Func<EntityType, bool>> expression) where HubType : IHub where EntityType : class
+        {
+            if (!ClientRejuvenators.ContainsKey(typeof(EntityType)))
+                return null;
+            return ClientRejuvenators[typeof(EntityType)]
+                .Select(r => (IClientRejuvenator<EntityType>)r)
+                .SingleOrDefault(r => LambdaCompare.Eq(r.Expression, expression) && r.Rejuvenate.Method.DeclaringType.Equals(typeof(SignalRHubRejuvenator<HubType>)));
+        }
+
+        private IClientRejuvenator<EntityType> GetClientRejuvenator<EntityType>(Expression<Func<EntityType, bool>> expression, RejuvenateClientCallback<EntityType> rejuvenate) where EntityType : class
+        {
+            if (!ClientRejuvenators.ContainsKey(typeof(EntityType)))
+                return null;
+            return ClientRejuvenators[typeof(EntityType)]
+                .Select(r => (IClientRejuvenator<EntityType>)r)
+                .SingleOrDefault(r => LambdaCompare.Eq(r.Expression, expression) && r.Rejuvenate == rejuvenate);
+        }
+
         #region Private
 
         #region Properties
@@ -123,21 +142,26 @@ namespace Rejuvenate
             PrepareRejuvenation(itemEntries);
         }
 
-        private void PrepareRejuvenation<T>(IEnumerable<DbEntityEntry<T>> entries) where T : class, new()
+        private void PrepareRejuvenation<EntityType>(IEnumerable<DbEntityEntry<EntityType>> entries) where EntityType : class, new()
         {
-            if (!ClientRejuvenators.ContainsKey(typeof(T))) return;
-            foreach (var untypedClientRejuvenator in ClientRejuvenators[typeof(T)])
+            if (!ClientRejuvenators.ContainsKey(typeof(EntityType))) return;
+            foreach (var untypedClientRejuvenator in ClientRejuvenators[typeof(EntityType)])
             {
-                var clientRejuvenator = (IClientRejuvenator<T>)untypedClientRejuvenator;
+                var clientRejuvenator = (IClientRejuvenator<EntityType>)untypedClientRejuvenator;
                 var pollingStates = new[] { EntityState.Added, EntityState.Deleted, EntityState.Modified };
 
-                var pairs = entries.Where(e => e.State == EntityState.Modified).Select(e => new KeyValuePair<T, T>(e.Entity, CreateWithValues<T>(e.OriginalValues))).ToList();
+                var pairs = entries.Where(e => e.State == EntityState.Modified).Select(e => new KeyValuePair<EntityType, EntityType>(e.Entity, CreateWithValues<EntityType>(e.OriginalValues))).ToList();
                 var originalEntities = pairs.Select(p => p.Value);
 
-                var applicableOriginalEntities = originalEntities.AsQueryable().Where(clientRejuvenator.Expression).ToList();
+                var applicableOriginalEntities = clientRejuvenator.Expression == null 
+                    ? originalEntities.AsQueryable().ToList()
+                    : originalEntities.AsQueryable().Where(clientRejuvenator.Expression).ToList();
 
-                var changedEntities = entries.Where(e => pollingStates.Contains(e.State)).Select(i => i.Entity).OfType<T>().AsQueryable();
-                var applicableChangedEntities = changedEntities.Where(clientRejuvenator.Expression).ToList();
+                var changedEntities = entries.Where(e => pollingStates.Contains(e.State)).Select(i => i.Entity).OfType<EntityType>().AsQueryable();
+                var applicableChangedEntities =
+                    clientRejuvenator.Expression == null
+                        ? changedEntities.ToList()
+                        : changedEntities.Where(clientRejuvenator.Expression).ToList();
 
                 var applicableChangedEntries = entries.Where(e => applicableChangedEntities.Contains(e.Entity));
 
@@ -191,18 +215,18 @@ namespace Rejuvenate
             EntityRejuvenators.ForEach(e => e.Rejuvenate());
         }
 
-        private void Rejuvenate<T>() where T : class
+        private void Rejuvenate<EntityType>() where EntityType : class
         {
-            foreach (var rejuvenatorEntryPair in EntriesByRejuvenatorAndState)
+            foreach (var rejuvenatorEntryPair in EntriesByRejuvenatorAndState.Where(entry => entry.Key is IClientRejuvenator<EntityType>))
             {
-                var clientRejuvenator = (IClientRejuvenator<T>)rejuvenatorEntryPair.Key;
+                var clientRejuvenator = rejuvenatorEntryPair.Key as IClientRejuvenator<EntityType>;
                 foreach (var stateEntryPair in rejuvenatorEntryPair.Value)
                 {
                     var state = stateEntryPair.Key;
-                    clientRejuvenator.Rejuvenate(typeof(T), clientRejuvenator.Id, state, stateEntryPair.Value.Select(i => (T)i.Entity));
+                    clientRejuvenator.Rejuvenate(typeof(EntityType), clientRejuvenator.Id, state, stateEntryPair.Value.Select(i => (EntityType)i.Entity));
                 }
+                EntriesByRejuvenatorAndState[clientRejuvenator].Clear();
             }
-            EntriesByRejuvenatorAndState.Clear();
         }
 
         #endregion
