@@ -120,7 +120,7 @@ namespace Rejuvenate
 
         #region Properties
 
-        private Dictionary<object, Dictionary<EntityState, List<DbEntityEntry>>> EntriesByRejuvenatorAndState = new Dictionary<object, Dictionary<EntityState, List<DbEntityEntry>>>();
+        private Dictionary<object, Dictionary<EntityState, List<KeyValuePair<DbEntityEntry, object>>>> EntriesByRejuvenatorAndState = new Dictionary<object, Dictionary<EntityState, List<KeyValuePair<DbEntityEntry, object>>>>();
 
         private Dictionary<Type, List<object>> ClientRejuvenators = new Dictionary<Type, List<object>>();
 
@@ -130,16 +130,26 @@ namespace Rejuvenate
 
         #region Prepare Rejuvenation
 
+        private IEnumerable<Tuple<object, object>> Relations;
+
         private void PrepareRejuvenation()
         {
             ChangeTracker.DetectChanges();
+            // todo do something with relations
+            // 2nd item is the list that is being updasted
+            // first item is in the list twice
+            // todo find the distinct items and check them in preparerejuvenation
+            //Relations = this.GetRelationships();
             EntityRejuvenators.ForEach(e => e.PrepareRejuvenation());
         }
 
-        private void PrepareRejuvenation<T>() where T : class, new()
+        private void PrepareRejuvenation<EntityType>() where EntityType : class, new()
         {
-            var itemEntries = ChangeTracker.Entries<T>();
-            PrepareRejuvenation(itemEntries);
+            var itemEntries = ChangeTracker.Entries<EntityType>();
+            var changed = itemEntries.Where(e => e.State != EntityState.Unchanged);
+            //var entities = changed.Select(c => c.Entity);
+            if(changed.Any())
+                PrepareRejuvenation(changed);
         }
 
         private void PrepareRejuvenation<EntityType>(IEnumerable<DbEntityEntry<EntityType>> entries) where EntityType : class, new()
@@ -170,20 +180,25 @@ namespace Rejuvenate
                     var state = entry.State;
 
                     // handle entities that have moved into the query
+                    EntityType original = null;
                     if (state == EntityState.Modified)
                     {
-                        var original = pairs.Single(p => p.Key == entry.Entity).Value;
-                        if (!applicableOriginalEntities.Contains(original))
+                        var org = pairs.Single(p => p.Key == entry.Entity).Value;
+                        if (!applicableOriginalEntities.Contains(org))
                         {
                             state = EntityState.Added;
+                        }
+                        else
+                        {
+                            original = org;
                         }
                     }
 
                     if (!EntriesByRejuvenatorAndState.ContainsKey(untypedClientRejuvenator))
-                        EntriesByRejuvenatorAndState[clientRejuvenator] = new Dictionary<EntityState, List<DbEntityEntry>>();
+                        EntriesByRejuvenatorAndState[clientRejuvenator] = new Dictionary<EntityState, List<KeyValuePair<DbEntityEntry, object>>>();
                     if (!EntriesByRejuvenatorAndState[clientRejuvenator].ContainsKey(state))
-                        EntriesByRejuvenatorAndState[clientRejuvenator][state] = new List<DbEntityEntry>();
-                    EntriesByRejuvenatorAndState[clientRejuvenator][state].Add(entry);
+                        EntriesByRejuvenatorAndState[clientRejuvenator][state] = new List<KeyValuePair<DbEntityEntry, object>>();
+                    EntriesByRejuvenatorAndState[clientRejuvenator][state].Add(new KeyValuePair<DbEntityEntry, object>(entry, original));
                 }
 
                 // handle entities that have moved out of the query
@@ -197,10 +212,10 @@ namespace Rejuvenate
                         var entry = entries.Single(e => e.Entity == changed);
                         var state = EntityState.Deleted;
                         if (!EntriesByRejuvenatorAndState.ContainsKey(untypedClientRejuvenator))
-                            EntriesByRejuvenatorAndState[clientRejuvenator] = new Dictionary<EntityState, List<DbEntityEntry>>();
+                            EntriesByRejuvenatorAndState[clientRejuvenator] = new Dictionary<EntityState, List<KeyValuePair<DbEntityEntry, object>>>();
                         if (!EntriesByRejuvenatorAndState[clientRejuvenator].ContainsKey(state))
-                            EntriesByRejuvenatorAndState[clientRejuvenator][state] = new List<DbEntityEntry>();
-                        EntriesByRejuvenatorAndState[clientRejuvenator][state].Add(entry);
+                            EntriesByRejuvenatorAndState[clientRejuvenator][state] = new List<KeyValuePair<DbEntityEntry, object>>();
+                        EntriesByRejuvenatorAndState[clientRejuvenator][state].Add(new KeyValuePair<DbEntityEntry, object>(entry, null));
                     }
                 }
             }
@@ -223,7 +238,7 @@ namespace Rejuvenate
                 foreach (var stateEntryPair in rejuvenatorEntryPair.Value)
                 {
                     var state = stateEntryPair.Key;
-                    clientRejuvenator.Rejuvenate(typeof(EntityType), clientRejuvenator.Id, state, stateEntryPair.Value.Select(i => (EntityType)i.Entity));
+                    clientRejuvenator.Rejuvenate(typeof(EntityType), clientRejuvenator.Id, state, stateEntryPair.Value.Select(i => new KeyValuePair<EntityType, EntityType>((EntityType)i.Key.Entity, (EntityType)i.Value)));
                 }
                 EntriesByRejuvenatorAndState[clientRejuvenator].Clear();
             }

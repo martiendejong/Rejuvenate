@@ -44,6 +44,12 @@ namespace Rejuvenate
         /// <returns></returns>
         IRejuvenatingQueryable<EntityType> Where(Expression<Func<EntityType, bool>> expression);
 
+        //IClientRejuvenator<IncludedEntityType> RejuvenateInclude<IncludedEntityType, HubType>(IRejuvenatingQueryable<IncludedEntityType> includedEntitiesQuery, Expression<Func<IncludedEntityType, EntityType>> select, Expression<Func<EntityType, object>> selectId, int rejuvenatorId) where IncludedEntityType : class where HubType : IHub;
+        IClientRejuvenator<IncludedEntityType> RejuvenateInclude<IncludedEntityType, HubType, IdType>(IRejuvenatingQueryable<IncludedEntityType> includedEntitiesQuery, Expression<Func<IncludedEntityType, EntityType>> select, Expression<Func<IncludedEntityType, IdType>> includedEntity_foreignKeySelector, Func<IQueryable<IdType>, IQueryable<EntityType>> getOriginalEntities, int rejuvenatorId) where IncludedEntityType : class where HubType : IHub;
+
+        // todo better thinking
+        //IRejuvenatingQueryable<EntityType> Include<TProperty>(Expression<Func<EntityType, TProperty>> propertyExpression);
+
         /// <summary>
         /// Adds an agent to the query that publishes changes to a callback function. Then returns the query.
         /// </summary>

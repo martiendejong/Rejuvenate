@@ -16,9 +16,13 @@ namespace RejuvenatingExample
 
         DbSet<Game> Games { get; }
 
+        DbSet<Player> Players { get; }
+
         IRejuvenatingQueryable<Item> RejuvenatingItems { get; }
 
         IRejuvenatingQueryable<Game> RejuvenatingGames { get; }
+
+        IRejuvenatingQueryable<Player> RejuvenatingPlayers { get; }
     }
 
     public class ExampleContext : RejuvenatingDbContext, IExampleContext
@@ -33,6 +37,8 @@ namespace RejuvenatingExample
         public virtual DbSet<Item> Items { get; set; }
 
         public virtual DbSet<Game> Games { get; set; }
+
+        public virtual DbSet<Player> Players { get; set; }
 
         #endregion
 
@@ -55,6 +61,14 @@ namespace RejuvenatingExample
             }
         }
 
+        public IRejuvenatingQueryable<Player> RejuvenatingPlayers
+        {
+            get
+            {
+                return new RejuvenatingQueryable<Player>(Players, this);
+            }
+        }
+
         // declare the polling executors for the change aware entities
         override protected List<IEntityRejuvenator> EntityRejuvenators
         {
@@ -63,11 +77,21 @@ namespace RejuvenatingExample
                 return new List<IEntityRejuvenator>
                 {
                     GetRejuvenator<Item>(),
-                    GetRejuvenator<Game>()
+                    GetRejuvenator<Game>(),
+                    GetRejuvenator<Player>()
                 };
             }
         }
 
         #endregion
+        
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Player>()
+                        .HasOptional(p => p.Game)
+                        .WithMany(g => g.Players);
+            modelBuilder.Entity<Game>()
+                        .HasOptional(p => p.Host);
+        }
     }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Rejuvenate
 {
-    public delegate void RejuvenateClientCallback<EntityType>(Type type, int rejuvenatorId, EntityState state, IEnumerable<EntityType> entities) where EntityType : class;
+    public delegate void RejuvenateClientCallback<EntityType>(Type type, int rejuvenatorId, EntityState state, IEnumerable<KeyValuePair<EntityType, EntityType>> entities) where EntityType : class;
 
     public class ClientRejuvenator<EntityType> : IClientRejuvenator<EntityType> where EntityType : class
     {

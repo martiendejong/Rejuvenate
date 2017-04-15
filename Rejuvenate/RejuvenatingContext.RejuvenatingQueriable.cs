@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Hubs;
+using System.Data.Entity.Infrastructure;
 
 namespace Rejuvenate
 {
@@ -88,6 +89,47 @@ namespace Rejuvenate
             {
                 return Expression == null ? expression : Expression.And(expression);
             }
+
+            public IClientRejuvenator<IncludedEntityType> RejuvenateInclude<IncludedEntityType, HubType, IdType>(IRejuvenatingQueryable<IncludedEntityType> includedEntitiesQuery, Expression<Func<IncludedEntityType, EntityType>> select, Expression<Func<IncludedEntityType, IdType>> includedEntity_foreignKeySelector, Func<IQueryable<IdType>, IQueryable<EntityType>> getOriginalEntities, int rejuvenatorId) where IncludedEntityType : class where HubType : IHub
+            {
+                RejuvenateClientCallback<IncludedEntityType> callback = (Type type, int subRejuvenatorId, EntityState state, IEnumerable<KeyValuePair<IncludedEntityType, IncludedEntityType>> subEntityPairs) =>
+                {
+                    var signalRHubRejuvenator = new SignalRHubRejuvenator<HubType>();
+
+                    // rejuvenate the entities that are linked on the subentity
+                    var entities = subEntityPairs.Select(entity => entity.Key).AsQueryable().Select(select);
+                    entities = (Expression == null ? entities : entities.Where(Expression)).Distinct();
+                    signalRHubRejuvenator.Rejuvenate(type, rejuvenatorId, EntityState.Modified, entities);
+
+                    // rejuvenate the entities that are unlinked on the subentity
+                    var originalSubEntities = subEntityPairs.Where(pair => pair.Value != null).Select(pair => pair.Value);
+                    var originalEntityIds = originalSubEntities.AsQueryable().Where(entity => entity != null).Select(includedEntity_foreignKeySelector).Distinct();
+                    var updatedOrgEntities = getOriginalEntities(originalEntityIds);
+                    updatedOrgEntities = (Expression == null ? updatedOrgEntities : updatedOrgEntities.Where(Expression));
+                    signalRHubRejuvenator.Rejuvenate(type, rejuvenatorId, EntityState.Modified, updatedOrgEntities);
+                };
+                return includedEntitiesQuery.RejuvenateQuery(callback);
+            }
+
+            /*public IRejuvenatingQueryable<EntityType> Include<IncludedEntityType>(IDbSet<IncludedEntityType> dbSet, Expression<Func<IncludedEntityType, bool>> expression) where IncludedEntityType : class, new()
+            {
+                var q = new RejuvenatingQueryable<IncludedEntityType>(dbSet, DbContext);
+                q.Where(propertyExpression);
+                var rejuvenator = DbContext.GetClientRejuvenator<EntityType, HubType>(Expression);
+                if (rejuvenator == null)
+                {
+                    rejuvenator = new ClientRejuvenator<EntityType>();
+                    rejuvenator.Expression = Expression;
+                    var signalRHubRejuvenator = new SignalRHubRejuvenator<HubType>();
+                    rejuvenator.Rejuvenate = signalRHubRejuvenator.Rejuvenate;
+                    DbContext.RegisterClientRejuvenator(rejuvenator);
+                }
+                return rejuvenator;
+
+                typeof(TProperty)
+                Expression<Func<EntityType, TProperty>> x = null;
+                OriginalQueryable.Include( x);
+            }*/
 
             #endregion
         }

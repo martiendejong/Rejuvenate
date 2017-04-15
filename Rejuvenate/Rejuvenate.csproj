@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClientRejuvenator.cs" />
+    <Compile Include="DbContextExtensions.cs" />
     <Compile Include="ExpressionHelpers.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="RejuvenatingContext.cs" />
