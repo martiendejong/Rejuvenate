@@ -1,4 +1,5 @@
 ﻿using Rejuvenate;
+using Rejuvenate.Db.SignalR;
 using RejuvenatingExample.Models;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Web;
 
 namespace RejuvenatingExample
 {
-    public class ExampleHub : RejuvenatingHub
+    public class ExampleHub : ChangePublishingHub
     {
         public static IExampleContext DbContext;
 

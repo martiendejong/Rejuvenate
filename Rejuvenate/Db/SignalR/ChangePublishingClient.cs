@@ -5,7 +5,7 @@ using System.Web;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 
-namespace Rejuvenate
+namespace Rejuvenate.Db.SignalR
 {
     public interface ISignalRClient
     {
@@ -22,18 +22,18 @@ namespace Rejuvenate
         }
     }
 
-    public interface IRejuvenatingClient : ISignalRClient
+    public interface ISignalRSubscriber : ISignalRClient
     {
-        List<int> RejuvenatorIds { get; set; }
+        List<int> PublisherIds { get; set; }
     }
 
-    public class RejuvenatingClient : SignalRClient, IRejuvenatingClient
+    public class SignalRSubscriber : SignalRClient, ISignalRSubscriber
     {
-        public List<int> RejuvenatorIds { get; set; }
+        public List<int> PublisherIds { get; set; }
 
-        public RejuvenatingClient(string connectionId) : base(connectionId)
+        public SignalRSubscriber(string connectionId) : base(connectionId)
         {
-            RejuvenatorIds = new List<int>();
+            PublisherIds = new List<int>();
         }
     }
 }

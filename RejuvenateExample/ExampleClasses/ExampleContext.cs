@@ -1,4 +1,4 @@
-﻿using Rejuvenate;
+﻿using Rejuvenate.Db;
 using RejuvenatingExample.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Web;
 
 namespace RejuvenatingExample
 {
-    public interface IExampleContext : IRejuvenatingDbContext
+    public interface IExampleContext : IChangePublishingDbContext
     {
         DbSet<Item> Items { get; }
 
@@ -18,14 +18,14 @@ namespace RejuvenatingExample
 
         DbSet<Player> Players { get; }
 
-        IRejuvenatingQueryable<Item> RejuvenatingItems { get; }
+        IChangePublishingQueryable<Item> ChangePublishingItems { get; }
 
-        IRejuvenatingQueryable<Game> RejuvenatingGames { get; }
+        IChangePublishingQueryable<Game> ChangePublishingGames { get; }
 
-        IRejuvenatingQueryable<Player> RejuvenatingPlayers { get; }
+        IChangePublishingQueryable<Player> ChangePublishingPlayers { get; }
     }
 
-    public class ExampleContext : RejuvenatingDbContext, IExampleContext
+    public class ExampleContext : ChangePublishingDbContext, IExampleContext
     {
         #region Regular DbContext
 
@@ -45,40 +45,40 @@ namespace RejuvenatingExample
         #region RejuvenatingDbContext
 
         // declare the change aware db query
-        public IRejuvenatingQueryable<Item> RejuvenatingItems
+        public IChangePublishingQueryable<Item> ChangePublishingItems
         {
             get
             {
-                return new RejuvenatingQueryable<Item>(Items, this);
+                return new ChangePublishingQueryable<Item>(Items, this);
             }
         }
 
-        public IRejuvenatingQueryable<Game> RejuvenatingGames
+        public IChangePublishingQueryable<Game> ChangePublishingGames
         {
             get
             {
-                return new RejuvenatingQueryable<Game>(Games, this);
+                return new ChangePublishingQueryable<Game>(Games, this);
             }
         }
 
-        public IRejuvenatingQueryable<Player> RejuvenatingPlayers
+        public IChangePublishingQueryable<Player> ChangePublishingPlayers
         {
             get
             {
-                return new RejuvenatingQueryable<Player>(Players, this);
+                return new ChangePublishingQueryable<Player>(Players, this);
             }
         }
 
         // declare the polling executors for the change aware entities
-        override protected List<IEntityRejuvenator> EntityRejuvenators
+        override protected List<IChangeProcessor> ChangeProcessors
         {
             get
             {
-                return new List<IEntityRejuvenator>
+                return new List<IChangeProcessor>
                 {
-                    GetRejuvenator<Item>(),
-                    GetRejuvenator<Game>(),
-                    GetRejuvenator<Player>()
+                    GetChangeProcessor<Item>(),
+                    GetChangeProcessor<Game>(),
+                    GetChangeProcessor<Player>()
                 };
             }
         }

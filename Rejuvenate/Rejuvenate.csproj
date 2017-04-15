@@ -77,20 +77,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientRejuvenator.cs" />
-    <Compile Include="DbContextExtensions.cs" />
-    <Compile Include="ExpressionHelpers.cs" />
-    <Compile Include="Interfaces.cs" />
-    <Compile Include="RejuvenatingContext.cs" />
-    <Compile Include="RejuvenatingHub.cs" />
+    <Compile Include="Db\EntitiesChangedHandler.cs" />
+    <Compile Include="Db\Helpers\DbContextExtensions.cs" />
+    <Compile Include="Db\Helpers\ExpressionHelpers.cs" />
+    <Compile Include="Db\IChangePublishingQueryable.cs" />
+    <Compile Include="Db\Interfaces.cs" />
+    <Compile Include="Db\IChangePublisher.cs" />
+    <Compile Include="Db\ChangePublisher.cs" />
+    <Compile Include="Db\ChangePublishingDbContext.cs" />
+    <Compile Include="Db\SignalR\ChangePublishingHub.cs" />
+    <Compile Include="Db\IChangeProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RejuvenatingClient.cs" />
+    <Compile Include="Db\SignalR\ChangePublishingClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <Compile Include="RejuvenatingContext.RejuvenatingQueriable.cs" />
-    <Compile Include="RejuvenatingContext.Rejuvenator.cs" />
+    <Compile Include="Db\ChangePublishingDbContext.ChangePublishingQueriable.cs" />
+    <Compile Include="Db\ChangePublishingDbContext.ChangeProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />

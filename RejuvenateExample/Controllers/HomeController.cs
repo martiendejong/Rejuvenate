@@ -23,8 +23,8 @@ namespace RejuvenatingExample.Controllers
         {
             // todo use DI
             ExampleHub.DbContext = DbContext;
-            var rejuvenatingQuery = DbContext.RejuvenatingItems.Where(i => i.Name.Length < 10);
-            var rejuvenator = rejuvenatingQuery.RejuvenateQuery<ExampleHub>();
+            var rejuvenatingQuery = DbContext.ChangePublishingItems.Where(i => i.Name.Length < 10);
+            var rejuvenator = rejuvenatingQuery.Subscribe<ExampleHub>();
             ViewBag.RejuvenatorId = rejuvenator.Id;
             IEnumerable<Item> result = rejuvenatingQuery.AsQueryable();
             return View(result);
@@ -34,8 +34,8 @@ namespace RejuvenatingExample.Controllers
         {
             // todo use DI
             ExampleHub.DbContext = DbContext;
-            var rejuvenatingQuery = DbContext.RejuvenatingItems.Where(i => i.Name.Length > 9);
-            var rejuvenator = rejuvenatingQuery.RejuvenateQuery<ExampleHub>();
+            var rejuvenatingQuery = DbContext.ChangePublishingItems.Where(i => i.Name.Length > 9);
+            var rejuvenator = rejuvenatingQuery.Subscribe<ExampleHub>();
             ViewBag.RejuvenatorId = rejuvenator.Id;
             IEnumerable<Item> result = rejuvenatingQuery.AsQueryable();
             return View("Index", result);
