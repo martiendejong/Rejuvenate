@@ -57,25 +57,31 @@ namespace Rejuvenate.Db
                 return publisher;
             }
 
-            public IChangePublisher<LinkedEntityType> SubscribeLinkedEntity<LinkedEntityType, HubType, EntityIdType>(IChangePublishingQueryable<LinkedEntityType> linkedEntities, Expression<Func<LinkedEntityType, EntityType>> select, Expression<Func<LinkedEntityType, EntityIdType>> foreignKeySelect, Func<IQueryable<EntityIdType>, IQueryable<EntityType>> resolveEntityById, int publisherId) where LinkedEntityType : class where HubType : IHub
+
+            public IChangePublisher<LinkedEntityType> SubscribeLinkedEntity<LinkedEntityType, HubType, EntityIdType>(
+                IChangePublishingQueryable<LinkedEntityType> linkedEntities, 
+                Expression<Func<LinkedEntityType, EntityType>> select, 
+                Expression<Func<LinkedEntityType, EntityIdType>> foreignKeySelect, 
+                Func<IQueryable<EntityIdType>, IQueryable<EntityType>> resolveEntityById,
+                int publisherId) where LinkedEntityType : class where HubType : IHub
             {
-                EntitiesChangedHandler<LinkedEntityType> callback = (Type type, int subPublisherId, EntityState state, IEnumerable<KeyValuePair<LinkedEntityType, LinkedEntityType>> subEntityPairs) =>
+                var pub = DbContext.GetLinkedEntityPublisher<EntityType, LinkedEntityType, HubType, EntityIdType>(Expression, select, foreignKeySelect, resolveEntityById, publisherId);
+                if(pub == null)
                 {
-                    var signalRHubPublisher = new SignalRHubPublisher<HubType>();
-
-                    // rejuvenate the entities that are linked to the subentity
-                    var entities = subEntityPairs.Select(entity => entity.Key).AsQueryable().Select(select);
-                    entities = (Expression == null ? entities : entities.Where(Expression)).Distinct();
-                    signalRHubPublisher.Publish(type, publisherId, EntityState.Modified, entities);
-
-                    // rejuvenate the entities that are unlinked from the subentity
-                    var originalSubEntities = subEntityPairs.Where(pair => pair.Value != null).Select(pair => pair.Value);
-                    var originalEntityIds = originalSubEntities.AsQueryable().Where(entity => entity != null).Select(foreignKeySelect).Distinct();
-                    var updatedOrgEntities = resolveEntityById(originalEntityIds);
-                    updatedOrgEntities = (Expression == null ? updatedOrgEntities : updatedOrgEntities.Where(Expression));
-                    signalRHubPublisher.Publish(type, publisherId, EntityState.Modified, updatedOrgEntities);
-                };
-                return linkedEntities.Subscribe(callback);
+                    // TODO make this ' normal'
+                    pub = new LinkedEntityChangedHandler<EntityType, LinkedEntityType, HubType, EntityIdType>()
+                    {
+                        Expression = Expression,
+                        select = select,
+                        publisherId = publisherId,
+                        resolveEntityById = resolveEntityById,
+                        foreignKeySelect = foreignKeySelect,
+                    };
+                    DbContext.LinkedEntityPublishers.Add(pub);
+                    return linkedEntities.Subscribe(pub.ChangedHandler);
+                }
+                // TODO get publisher
+                return null;
             }
 
             public IQueryable<EntityType> AsQueryable()
@@ -114,6 +120,36 @@ namespace Rejuvenate.Db
             }
 
             #endregion
+        }
+
+        public class LinkedEntityChangedHandler<EntityType, LinkedEntityType, HubType, EntityIdType> where LinkedEntityType : class where HubType : IHub
+        {
+            public Expression<Func<EntityType, bool>> Expression;
+
+            public Expression<Func<LinkedEntityType, EntityType>> select;
+
+            public int publisherId;
+
+            public Func<IQueryable<EntityIdType>, IQueryable<EntityType>> resolveEntityById;
+
+            public Expression<Func<LinkedEntityType, EntityIdType>> foreignKeySelect;
+
+            public void ChangedHandler(Type type, int rejuvenatorId, EntityState state, IEnumerable<KeyValuePair<LinkedEntityType, LinkedEntityType>> subEntityPairs)
+            {
+                var signalRHubPublisher = new SignalRHubPublisher<HubType>();
+
+                // rejuvenate the entities that are linked to the subentity
+                var entities = subEntityPairs.Select(entity => entity.Key).AsQueryable().Select(select);
+                entities = (Expression == null ? entities : entities.Where(Expression)).Distinct();
+                signalRHubPublisher.Publish(type, publisherId, EntityState.Modified, entities);
+
+                // rejuvenate the entities that are unlinked from the subentity
+                var originalSubEntities = subEntityPairs.Where(pair => pair.Value != null).Select(pair => pair.Value);
+                var originalEntityIds = originalSubEntities.AsQueryable().Where(entity => entity != null).Select(foreignKeySelect).Distinct();
+                var updatedOrgEntities = resolveEntityById(originalEntityIds);
+                updatedOrgEntities = (Expression == null ? updatedOrgEntities : updatedOrgEntities.Where(Expression));
+                signalRHubPublisher.Publish(type, publisherId, EntityState.Modified, updatedOrgEntities);
+            }
         }
     }
 }

@@ -39,11 +39,11 @@ namespace Rejuvenate.Db
         #region Abstract
 
         /// <summary>
-        /// Declare an IEntityRejuvenator instance per entity type using the function GetRejuvenator.
+        /// Declare an IChangeProcessor instance per entity type using the function GetChangeProcessor.
         /// Example:
-        /// return new List<IEntityRejuvenator>
+        /// return new List<IChangeProcessor>
         /// {
-        ///     GetRejuvenator<MyEntity>()
+        ///     GetChangeProcessor<MyEntity>()
         /// };
         /// </summary>
         protected abstract List<IChangeProcessor> ChangeProcessors { get; }
@@ -109,13 +109,30 @@ namespace Rejuvenate.Db
                 .SingleOrDefault(pub => LambdaCompare.Eq(pub.Query, expression) && pub.EntitiesChanged.Method.DeclaringType.Equals(typeof(SignalRHubPublisher<HubType>)));
         }
 
-        private IChangePublisher<EntityType> GetPublisher<EntityType>(Expression<Func<EntityType, bool>> expression, EntitiesChangedHandler<EntityType> rejuvenate) where EntityType : class
+        private IChangePublisher<EntityType> GetPublisher<EntityType>(Expression<Func<EntityType, bool>> expression, EntitiesChangedHandler<EntityType> entitiesChanged) where EntityType : class
         {
             if (!Publishers.ContainsKey(typeof(EntityType)))
                 return null;
             return Publishers[typeof(EntityType)]
-                .Select(r => (IChangePublisher<EntityType>)r)
-                .SingleOrDefault(r => LambdaCompare.Eq(r.Query, expression) && r.EntitiesChanged == rejuvenate);
+                .Select(pub => (IChangePublisher<EntityType>)pub)
+                .SingleOrDefault(pub => LambdaCompare.Eq(pub.Query, expression) && pub.EntitiesChanged == entitiesChanged);
+        }
+
+        private LinkedEntityChangedHandler<EntityType, LinkedEntityType, HubType, EntityIdType> GetLinkedEntityPublisher<EntityType, LinkedEntityType, HubType, EntityIdType>(
+            Expression<Func<EntityType, bool>> expression,
+            Expression<Func<LinkedEntityType, EntityType>> select,
+            Expression<Func<LinkedEntityType, EntityIdType>> foreignKeySelect,
+            Func<IQueryable<EntityIdType>, IQueryable<EntityType>> resolveEntityById,
+            int publisherId) where EntityType : class where LinkedEntityType : class where HubType : IHub
+        {
+            return LinkedEntityPublishers.Select(pub => pub as LinkedEntityChangedHandler<EntityType, LinkedEntityType, HubType, EntityIdType>)
+                .SingleOrDefault(
+                    pub => pub != null
+                    && pub.publisherId == publisherId
+                    && LambdaCompare.Eq(pub.select, select)
+                    && LambdaCompare.Eq(pub.foreignKeySelect, foreignKeySelect)
+                    && LambdaCompare.Eq(pub.Expression, expression)
+                );
         }
 
         #region Private
@@ -125,6 +142,8 @@ namespace Rejuvenate.Db
         private Dictionary<object, Dictionary<EntityState, List<KeyValuePair<DbEntityEntry, object>>>> EntriesByPublisherAndState = new Dictionary<object, Dictionary<EntityState, List<KeyValuePair<DbEntityEntry, object>>>>();
 
         private Dictionary<Type, List<object>> Publishers = new Dictionary<Type, List<object>>();
+
+        private List<object> LinkedEntityPublishers = new List<object>();
 
         #endregion
 

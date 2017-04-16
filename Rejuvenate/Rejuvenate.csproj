@@ -93,7 +93,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
-    <Compile Include="Db\ChangePublishingDbContext.ChangePublishingQueriable.cs" />
+    <Compile Include="Db\ChangePublishingDbContext.ChangePublishingQueryable.cs" />
     <Compile Include="Db\ChangePublishingDbContext.ChangeProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
