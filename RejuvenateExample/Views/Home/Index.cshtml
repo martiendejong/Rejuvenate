@@ -80,7 +80,7 @@
 
             // Start the connection.
             $.connection.hub.start().done(function () {
-                myHub.server.registerRejuvenatingClient([@ViewBag.rejuvenatorId]);
+                myHub.server.subscribe([@ViewBag.rejuvenatorId]);
             });
         });
 

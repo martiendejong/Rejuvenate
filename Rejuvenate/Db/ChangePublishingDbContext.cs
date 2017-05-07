@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR.Hubs;
+﻿using EFExtensions;
+using Microsoft.AspNet.SignalR.Hubs;
 using Rejuvenate.Db.Helpers;
 using Rejuvenate.Db.SignalR;
 using System;

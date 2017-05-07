@@ -9,6 +9,7 @@ using Microsoft.AspNet.SignalR.Hubs;
 using System.Data.Entity.Infrastructure;
 using Rejuvenate.Db.SignalR;
 using Rejuvenate.Db.Helpers;
+using EFExtensions;
 
 namespace Rejuvenate.Db
 {

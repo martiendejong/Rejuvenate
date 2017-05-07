@@ -212,6 +212,7 @@
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="ExampleClasses\ExampleHub.cs" />
     <Compile Include="ExampleClasses\ExampleContext.cs" />
+    <Compile Include="ExampleClasses\ExampleV2Context.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -236,6 +237,9 @@
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\angular.min.js.map" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\ChangePublisher.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\Controllers\LandingPageController.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
@@ -299,6 +303,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EFExtensions\EFExtensions.csproj">
+      <Project>{8d58e3e8-82c0-4a36-86fd-a4277146c402}</Project>
+      <Name>EFExtensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Rejuvenate\Rejuvenate.csproj">
       <Project>{7e0885aa-9884-4658-a1e9-8aae0286ecee}</Project>
       <Name>Rejuvenate</Name>

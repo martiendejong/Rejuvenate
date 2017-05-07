@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rejuvenate.Db.Helpers
+namespace EFExtensions
 {
     public class ParameterRebinder : ExpressionVisitor
     {
