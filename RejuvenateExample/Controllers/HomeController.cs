@@ -51,7 +51,7 @@ namespace RejuvenatingExample.Controllers
         public ActionResult Index3()
         {
             
-            var channel2 = V2Context.Items.Where(x2 => x2.Name.Length < 5).Subscribe(Publisher.Receive);
+            var channel2 = V2Context.Items.Where(x2 => x2.Name.Length < 5).Subscribe<ExampleV2Hub>();
 
 
             V2Context.Items.Add(new Item { Name = "hoi" });

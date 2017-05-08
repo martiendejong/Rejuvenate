@@ -13,6 +13,7 @@ using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 using Rejuvenate.Db.Helpers;
 using System.Collections.ObjectModel;
+using Microsoft.AspNet.SignalR.Hubs;
 
 namespace Rejuvenate.v2
 {
@@ -138,6 +139,8 @@ namespace Rejuvenate.v2
 
         public static List<ChangePublishingChannel<EntityType>> Channels = new List<ChangePublishingChannel<EntityType>>();
 
+        public static Dictionary<Type, object> HubPublisherInstanceByHubType = new Dictionary<Type, object>();
+
         public static ChangePublishingChannel<EntityType> GetChannel(Expression<Func<EntityType, bool>> expression, EntitiesChangedChannelHandler<EntityType> handler)
         {
             foreach(var exprHandler in Channels)
@@ -150,6 +153,20 @@ namespace Rejuvenate.v2
             return null;
         }
 
+        // Subscribe a SignalR hubtype
+        public ChangePublishingChannel<EntityType> Subscribe<HubType>() where HubType : IHub
+        {
+            var type = typeof(HubType);
+            
+            if (!HubPublisherInstanceByHubType.ContainsKey(type))
+            {
+                HubPublisherInstanceByHubType.Add(type, new SignalRHubPublisher<HubType>());
+            }
+            var publisher = (SignalRHubPublisher<HubType>)HubPublisherInstanceByHubType[type];
+            return Subscribe(publisher.Receive);
+        }
+
+        // Subscribe an event handler
         public ChangePublishingChannel<EntityType> Subscribe(EntitiesChangedChannelHandler<EntityType> handler)
         {
             var channel = GetChannel(InnerExpression, handler);
