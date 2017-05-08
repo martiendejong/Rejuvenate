@@ -15,9 +15,15 @@ namespace RejuvenatingExample.Controllers
     {
         public IExampleContext DbContext { get; }
 
-        public HomeController(IExampleContext dbContext)
+        public IExampleV2Context V2Context { get; }
+
+        public Rejuvenate.v2.ISignalRHubPublisher<ExampleV2Hub> Publisher { get; }
+
+        public HomeController(IExampleContext dbContext, IExampleV2Context v2Context, Rejuvenate.v2.ISignalRHubPublisher<ExampleV2Hub> publisher)
         {
             DbContext = dbContext;
+            V2Context = v2Context;
+            Publisher = publisher;
         }
 
         public ActionResult Index()
@@ -41,42 +47,19 @@ namespace RejuvenatingExample.Controllers
             IEnumerable<Item> result = rejuvenatingQuery.AsQueryable();
             return View("Index", result);
         }
-
+        
         public ActionResult Index3()
         {
-            // new way
-
-            var x = new ExampleV2Context();
-            x.ChangePublisher.Subscribe<Item>((changes) => 
-            {
-                Console.Out.WriteLine("Entities changed");
-            });
-
-            EntitiesChangedChannelHandler<Item> func = (changes, channelId) =>
-            {
-                Console.Out.WriteLine("Entities changed");
-            };
             
-
-            var channel = x.Items.Where(x2 => x2.Name.Length > 3).Subscribe(func);
-            Guid g2 = x.Items.Where(x2 => x2.Name.Length > 3).Subscribe(func).Guid;
+            var channel2 = V2Context.Items.Where(x2 => x2.Name.Length < 5).Subscribe(Publisher.Receive);
 
 
-            EntitiesChangedHandler<Item> func2 = (changes) =>
-            {
-                //itemP.Receive<Item>
-                Console.Out.WriteLine("Entities changed");
-            };
-            Rejuvenate.v2.SignalRHubPublisher<Rejuvenate.v2.ChangePublishingHubV2> itemP = new SignalRHubPublisher<ChangePublishingHubV2>();
-            var channel2 = x.Items.Where(x2 => x2.Name.Length < 5).Subscribe(itemP.Receive);
-
-
-            x.Items.Add(new Item { Name = "hoi" });
-            x.SaveChanges();
+            V2Context.Items.Add(new Item { Name = "hoi" });
+            V2Context.SaveChanges();
 
 
             
-            ViewBag.RejuvenatorId = channel.Guid.ToString();
+            ViewBag.RejuvenatorId = channel2.Guid.ToString();
 
             // old way
             // todo use DI
@@ -85,7 +68,7 @@ namespace RejuvenatingExample.Controllers
             var rejuvenator = rejuvenatingQuery.Subscribe<ExampleHub>();
             ViewBag.RejuvenatorId = rejuvenator.Id;
             IEnumerable<Item> result = rejuvenatingQuery.AsQueryable();*/
-            return View("Index", x.Items);
+            return View("Index3", V2Context.Items);
         }
 
         public ActionResult About()

@@ -19,6 +19,11 @@ namespace Rejuvenate.v2
                 //context.Items...
                 //Clients.Caller.updateData(context.Items);
                 */
+    
+    public interface IChangePublishingHubV2
+    {
+
+    }
 
     // This is where commands from the webclient (player ui) are executed
     public class ChangePublishingHubV2 : Hub
@@ -33,11 +38,22 @@ namespace Rejuvenate.v2
         }
     }
 
-    public class SignalRHubPublisher<HubType> where HubType : IHub
+    public interface ISignalRHubPublisher<HubType> where HubType : IHub
+    {
+        void Receive<EntityType>(IEnumerable<EntityChangedMessage<EntityType>> messages, ChangePublishingChannel<EntityType> channel);
+    }
+
+    public class SignalRHubPublisher<HubType> : ISignalRHubPublisher<HubType> where HubType : IHub
     {
         public void Receive<EntityType>(IEnumerable<EntityChangedMessage<EntityType>> messages, ChangePublishingChannel<EntityType> channel)
         {
             var clients = ChangePublishingHubV2.Subscribers.Where(client => client.ChannelIds.Contains(channel.Guid));
+            if (clients.Any())
+                Broadcast(messages, channel, clients);
+        }
+
+        private void Broadcast<EntityType>(IEnumerable<EntityChangedMessage<EntityType>> messages, ChangePublishingChannel<EntityType> channel, IEnumerable<ISignalRSubscriber> clients)
+        {
             var context = GlobalHost.ConnectionManager.GetHubContext<HubType>();
 
             var added = messages.Where(m => m.EntityState == EntityState.Added).Select(m => m.NewEntity);
@@ -48,11 +64,11 @@ namespace Rejuvenate.v2
             {
                 foreach (var client in clients)
                 {
-                    if (added.Count() > 0)
+                    if (added.Any())
                         context.Clients.Client(client.ConnectionId).itemsAdded(typeof(EntityType).ToString(), channel.Guid.ToString(), added);
-                    if (deleted.Count() > 0)
+                    if (deleted.Any())
                         context.Clients.Client(client.ConnectionId).itemsRemoved(typeof(EntityType).ToString(), channel.Guid.ToString(), deleted);
-                    if (modified.Count() > 0)
+                    if (modified.Any())
                         context.Clients.Client(client.ConnectionId).itemsUpdated(typeof(EntityType).ToString(), channel.Guid.ToString(), modified);
                 }
             }

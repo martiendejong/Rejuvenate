@@ -11,7 +11,16 @@ using System.Web;
 
 namespace RejuvenatingExample
 {
-    public class ExampleV2Context : Rejuvenate.v2.ChangePublishingDbContext
+    public interface IExampleV2Context : IDbContext
+    {
+        ChangePublishingDbSet<Item> Items { get; }
+
+        ChangePublishingDbSet<Game> Games { get; }
+
+        ChangePublishingDbSet<Player> Players { get; }
+    }
+
+    public class ExampleV2Context : Rejuvenate.v2.ChangePublishingDbContext, IExampleV2Context
     {
         public ExampleV2Context() : base("name=DefaultConnection")
         {
@@ -32,7 +41,7 @@ namespace RejuvenatingExample
             }
         }
 
-        public ChangePublishingQueryable<Game> Games
+        public ChangePublishingDbSet<Game> Games
         {
             get
             {
@@ -40,7 +49,7 @@ namespace RejuvenatingExample
             }
         }
 
-        public ChangePublishingQueryable<Player> Players
+        public ChangePublishingDbSet<Player> Players
         {
             get
             {

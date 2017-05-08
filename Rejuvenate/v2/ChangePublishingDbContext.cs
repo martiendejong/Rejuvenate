@@ -211,7 +211,7 @@ namespace Rejuvenate.v2
     public class ChangePublishingDbContext : ChangePublishingDbContextBase
     {
         // Convenience method for declaring a Queryable
-        public ChangePublishingDbSet<EntityType> Set<EntityType>() where EntityType : class, new()
+        new public ChangePublishingDbSet<EntityType> Set<EntityType>() where EntityType : class, new()
         {
             return new ChangePublishingDbSet<EntityType>(base.Set<EntityType>(), this);
         }

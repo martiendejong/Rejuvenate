@@ -210,6 +210,7 @@
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="ExampleClasses\ExampleV2Hub.cs" />
     <Compile Include="ExampleClasses\ExampleHub.cs" />
     <Compile Include="ExampleClasses\ExampleContext.cs" />
     <Compile Include="ExampleClasses\ExampleV2Context.cs" />
@@ -290,6 +291,7 @@
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Game\Index.cshtml" />
+    <Content Include="Views\Home\Index3.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
