@@ -41,7 +41,7 @@ namespace RejuvenatingExample.Controllers
             // subscribe to changes in Game entities
             var publisher = query.Subscribe<ExampleHub>();
             // subscribe to changes in Player entities and publish the corresponding Game entities
-            query.SubscribeLinkedEntity<Player, ExampleHub, int>
+            /*query.SubscribeLinkedEntity<Player, ExampleHub, int>
             (
                 DbContext.ChangePublishingPlayers, 
                 player => player.Game, 
@@ -53,7 +53,7 @@ namespace RejuvenatingExample.Controllers
                 .Include(game => game.Host)
                 .Include(game => game.Players), 
                 publisher.Id
-            );
+            );*/
 
             // store data in the viewbag
             ViewBag.UserEmail = user.Email;

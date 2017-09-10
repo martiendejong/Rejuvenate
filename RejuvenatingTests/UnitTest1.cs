@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RejuvenatingTests.TestClasses;
 using Rejuvenate.Db;
+using Rejuvenate.v2;
 
 namespace RejuvenatingTests
 {
@@ -13,7 +14,7 @@ namespace RejuvenatingTests
         {
             var context = new TestClasses.TestContext(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
             var count = 0;
-            EntitiesChangedHandler<TestEntity> handler = (type, rejuvenatorId, state, entitites) => 
+            EntitiesChangedHandler<TestEntity> handler = (messages, listener) => 
             {
                 ++count;
             };
@@ -31,20 +32,21 @@ namespace RejuvenatingTests
         public void EntitiesChangedHandlerShouldFireOnceWhenALinkedEntityWithMultipleSubscribersChanges()
         {
             // @todo
-           /* var context = new TestClasses.TestContext(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
+            var context = new TestClasses.TestContext(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
             var count = 0;
-            EntitiesChangedHandler<TestEntity> handler = (type, rejuvenatorId, state, entitites) =>
+            EntitiesChangedHandler<TestEntity> handler = (messages, listener) =>
             {
                 ++count;
             };
-            context.ChangePublishingEntities.Subscribe(handler);
+            //context.ChangePublishingEntities.SubscribeChildEntity()
+            //context.ChangePublishingEntities.SubscribeChildEntity(handler);
             context.ChangePublishingEntities.Subscribe(handler);
 
             var entity = new TestEntity();
             context.Entities.Add(entity);
             context.SaveChanges();
 
-            Assert.AreEqual(count, 1);*/
+            Assert.AreEqual(count, 1);
         }
     }
 }

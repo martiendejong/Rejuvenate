@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Rejuvenate.Db.Helpers
+namespace EFExtensions
 {
     public static class DbContextExtensions
     {

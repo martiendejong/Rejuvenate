@@ -1,5 +1,5 @@
 ﻿using Rejuvenate;
-using Rejuvenate.Db.SignalR;
+using Rejuvenate.v2.SignalRChangePublishing;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -9,7 +9,7 @@ using System.Web;
 
 namespace RejuvenatingTests.TestClasses
 {
-    public class TestHub : ChangePublishingHub
+    public class TestHub : ChangePublishingHubV2
     {
         public static ITestContext DbContext;
 

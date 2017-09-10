@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Rejuvenate.Db
 {
-    public interface IDbContext
+    public interface IDbContext : IDisposable, IObjectContextAdapter
     {
         int SaveChanges();
     }

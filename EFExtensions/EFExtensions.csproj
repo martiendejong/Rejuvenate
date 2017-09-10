@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DbContextExtensions.cs" />
     <Compile Include="DbContextWithSaveEvent.cs" />
     <Compile Include="DbPropertyValuesCreateEntityExtensionMethods.cs" />
     <Compile Include="DbSetExtensions.cs" />

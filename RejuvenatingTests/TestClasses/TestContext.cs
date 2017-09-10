@@ -1,19 +1,17 @@
 ﻿using Rejuvenate.Db;
+using Rejuvenate.v2;
 using System.Collections.Generic;
 using System.Data.Entity;
 
 namespace RejuvenatingTests.TestClasses
 {
-    public interface ITestContext : IChangePublishingDbContext
+    public interface ITestContext : Rejuvenate.Db.IDbContext
     {
 
-        DbSet<TestEntity> Entities { get; set; }
 
-        DbSet<TestEntity2> Entities2 { get; set; }
+        ChangePublishingDbSet<TestEntity> ChangePublishingEntities { get; }
 
-        IChangePublishingQueryable<TestEntity> ChangePublishingEntities { get; }
-
-        IChangePublishingQueryable<TestEntity2> ChangePublishingEntities2 { get; }
+        ChangePublishingDbSet<TestEntity2> ChangePublishingEntities2 { get; }
 
     }
 
@@ -34,36 +32,22 @@ namespace RejuvenatingTests.TestClasses
 
         #region RejuvenatingDbContext
 
-        // declare the change aware db query
-        public IChangePublishingQueryable<TestEntity> ChangePublishingEntities
+        public ChangePublishingDbSet<TestEntity> ChangePublishingEntities
         {
             get
             {
-                return new ChangePublishingQueryable<TestEntity>(Entities, this);
+                return Set<TestEntity>();
             }
         }
 
-        public IChangePublishingQueryable<TestEntity2> ChangePublishingEntities2
+        public ChangePublishingDbSet<TestEntity2> ChangePublishingEntities2
         {
             get
             {
-                return new ChangePublishingQueryable<TestEntity2>(Entities2, this);
+                return Set<TestEntity2>();
             }
         }
-
-        // declare the polling executors for the change aware entities
-        override protected List<IChangeProcessor> ChangeProcessors
-        {
-            get
-            {
-                return new List<IChangeProcessor>
-                {
-                    GetChangeProcessor<TestEntity>(),
-                    GetChangeProcessor<TestEntity2>()
-                };
-            }
-        }
-
+        
         #endregion
         
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

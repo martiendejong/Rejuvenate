@@ -6,10 +6,10 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity;
+using Rejuvenate.v2.EntityChangePublishing;
+using Rejuvenate.v2;
 
-
-
-namespace Rejuvenate.v2
+namespace Rejuvenate.v2.SignalRChangePublishing
 {
     /*
                 // todo DI gebruiken 
@@ -38,38 +38,38 @@ namespace Rejuvenate.v2
         }
     }
 
-    public interface ISignalRHubPublisher<HubType> where HubType : IHub
+    public interface ISignalRHubListener<HubType> where HubType : IHub
     {
-        void Receive<EntityType>(IEnumerable<EntityChangedMessage<EntityType>> messages, ChangePublishingChannel<EntityType> channel);
+        void Receive<EntityType>(IEnumerable<EntityChangeMessage<EntityType>> messages, EntitiesChangedListener<EntityType> channel) where EntityType : class, new();
     }
 
-    public class SignalRHubPublisher<HubType> : ISignalRHubPublisher<HubType> where HubType : IHub
+    public class SignalRHubListener<HubType> : ISignalRHubListener<HubType> where HubType : IHub
     {
-        public void Receive<EntityType>(IEnumerable<EntityChangedMessage<EntityType>> messages, ChangePublishingChannel<EntityType> channel)
+        public void Receive<EntityType>(IEnumerable<EntityChangeMessage<EntityType>> messages, EntitiesChangedListener<EntityType> channel) where EntityType : class, new()
         {
-            var clients = ChangePublishingHubV2.Subscribers.Where(client => client.ChannelIds.Contains(channel.Guid));
+            var clients = ChangePublishingHubV2.Subscribers.Where(client => client.ChannelIds.Contains(channel.Id));
             if (clients.Any())
                 Broadcast(messages, channel, clients);
         }
 
-        private void Broadcast<EntityType>(IEnumerable<EntityChangedMessage<EntityType>> messages, ChangePublishingChannel<EntityType> channel, IEnumerable<ISignalRSubscriber> clients)
+        private void Broadcast<EntityType>(IEnumerable<EntityChangeMessage<EntityType>> messages, EntitiesChangedListener<EntityType> channel, IEnumerable<ISignalRSubscriber> clients) where EntityType : class, new()
         {
             var context = GlobalHost.ConnectionManager.GetHubContext<HubType>();
 
-            var added = messages.Where(m => m.EntityState == EntityState.Added).Select(m => m.NewEntity);
-            var deleted = messages.Where(m => m.EntityState == EntityState.Deleted).Select(m => m.OldEntity);
-            var modified = messages.Where(m => m.EntityState == EntityState.Modified).Select(m => m.NewEntity);
+            var added = messages.Where(m => m.State == EntityState.Added).Select(m => m.Current);
+            var deleted = messages.Where(m => m.State == EntityState.Deleted).Select(m => m.Last);
+            var modified = messages.Where(m => m.State == EntityState.Modified).Select(m => m.Current);
 
             if (added.Count() > 0 || deleted.Count() > 0 || modified.Count() > 0)
             {
                 foreach (var client in clients)
                 {
                     if (added.Any())
-                        context.Clients.Client(client.ConnectionId).itemsAdded(typeof(EntityType).ToString(), channel.Guid.ToString(), added);
+                        context.Clients.Client(client.ConnectionId).itemsAdded(typeof(EntityType).ToString(), channel.Id.ToString(), added);
                     if (deleted.Any())
-                        context.Clients.Client(client.ConnectionId).itemsRemoved(typeof(EntityType).ToString(), channel.Guid.ToString(), deleted);
+                        context.Clients.Client(client.ConnectionId).itemsRemoved(typeof(EntityType).ToString(), channel.Id.ToString(), deleted);
                     if (modified.Any())
-                        context.Clients.Client(client.ConnectionId).itemsUpdated(typeof(EntityType).ToString(), channel.Guid.ToString(), modified);
+                        context.Clients.Client(client.ConnectionId).itemsUpdated(typeof(EntityType).ToString(), channel.Id.ToString(), modified);
                 }
             }
         }

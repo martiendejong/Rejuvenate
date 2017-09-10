@@ -1,26 +1,28 @@
-﻿using Rejuvenate.Db;
-using Rejuvenate.v2;
+﻿using Rejuvenate.v2;
 using RejuvenatingExample.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Web;
 
 namespace RejuvenatingExample
 {
-    public interface IExampleV2Context : IDbContext
+    public interface IExampleV2Context : Rejuvenate.Db.IDbContext
     {
         ChangePublishingDbSet<Item> Items { get; }
 
         ChangePublishingDbSet<Game> Games { get; }
 
         ChangePublishingDbSet<Player> Players { get; }
+
+        DbEntityEntry<EntityType> Entry<EntityType>(EntityType entity) where EntityType : class;
     }
 
-    public class ExampleV2Context : Rejuvenate.v2.ChangePublishingDbContext, IExampleV2Context
+    public class ExampleV2Context : ChangePublishingDbContext, IExampleV2Context
     {
         public ExampleV2Context() : base("name=DefaultConnection")
         {

@@ -1,5 +1,6 @@
 ﻿using Rejuvenate;
 using Rejuvenate.v2;
+using Rejuvenate.v2.SignalRChangePublishing;
 using RejuvenatingExample.Models;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace RejuvenatingExample
 {
     public class ExampleV2Hub : ChangePublishingHubV2
     {
-        public static ExampleV2Context DbContext;
+        public static IExampleV2Context DbContext;
 
         public static Dictionary<string, string> UserNameByConnectionId = new Dictionary<string, string>();
 
@@ -73,7 +74,8 @@ namespace RejuvenatingExample
 
         public void remove()
         {
-            var item = DbContext.Items.First();
+            var item = DbContext.Items.FirstOrDefault();
+            if (item == null) return;
             DbContext.Items.Remove(item);
             DbContext.SaveChanges();
         }

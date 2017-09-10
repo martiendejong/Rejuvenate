@@ -62,9 +62,9 @@ namespace RejuvenatingExample.App_Start
         /// <param name="kernel">The kernel.</param>
         private static void RegisterServices(IKernel kernel)
         {
-            kernel.Bind<IExampleContext>().To<ExampleContext>().InSingletonScope();
+            //kernel.Bind<IExampleContext>().To<ExampleContext>().InSingletonScope();
             kernel.Bind<IExampleV2Context>().To<ExampleV2Context>().InSingletonScope();
-            kernel.Bind<Rejuvenate.v2.ISignalRHubPublisher<ExampleV2Hub>>().To<Rejuvenate.v2.SignalRHubPublisher<ExampleV2Hub>>().InSingletonScope();
+            kernel.Bind<Rejuvenate.v2.SignalRChangePublishing.ISignalRHubListener<ExampleV2Hub>>().To<Rejuvenate.v2.SignalRChangePublishing.SignalRHubListener<ExampleV2Hub>>().InSingletonScope();
         }
     }
 }

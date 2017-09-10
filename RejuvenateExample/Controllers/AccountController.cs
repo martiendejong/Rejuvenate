@@ -52,6 +52,38 @@ namespace RejuvenatingExample.Controllers
             }
         }
 
+        [AllowAnonymous]
+        public async Task<ActionResult> TestUser()
+        {
+            var email = "test@example.com";
+            var password = "Test123!";
+            var rememberMe = true;
+            var returnUrl = "/";
+
+            var result = await SignInManager.PasswordSignInAsync(email, password, rememberMe, shouldLockout: false);
+            switch (result)
+            {
+                case SignInStatus.Success:
+                    return RedirectToLocal(returnUrl);
+                case SignInStatus.LockedOut:
+                    return View("Lockout");
+                case SignInStatus.RequiresVerification:
+                    return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = rememberMe });
+                case SignInStatus.Failure:
+                default:
+                    var user = new ApplicationUser { UserName = email, Email = email };
+                    var result2 = await UserManager.CreateAsync(user, password);
+                    if (result2.Succeeded)
+                    {
+                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
+                        return RedirectToLocal(returnUrl);
+                        //return RedirectToAction("Index", "Home");
+                    }
+                    AddErrors(result2);
+                    return View("Register");
+            }
+        }
+
         //
         // GET: /Account/Login
         [AllowAnonymous]
