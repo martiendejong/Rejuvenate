@@ -9,17 +9,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityChangeTracker", "RealV2\ChangePublishingDbContext\EntityChangeTracker.csproj", "{F989FC8E-6EAA-4A6C-B61E-BC2D9346FD8B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityChangeTracker", "ChangePublishingDbContext\EntityChangeTracker.csproj", "{F989FC8E-6EAA-4A6C-B61E-BC2D9346FD8B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingDbContextTest", "RealV2\ChangePublishingDbContextTest\ChangePublishingDbContextTest.csproj", "{4D9D003C-56F3-4B25-9A94-F0499B380265}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingDbContextTest", "ChangePublishingDbContextTest\ChangePublishingDbContextTest.csproj", "{4D9D003C-56F3-4B25-9A94-F0499B380265}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbContextWithSaveEvent", "RealV2\DbContextWithSaveEvent\DbContextWithSaveEvent.csproj", "{3E34A91B-82BD-4003-A347-D8DF5D62050E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbContextWithSaveEvent", "DbContextWithSaveEvent\DbContextWithSaveEvent.csproj", "{3E34A91B-82BD-4003-A347-D8DF5D62050E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbContextWithCustomDbSet", "RealV2\DbContext\DbContextWithCustomDbSet.csproj", "{65ADE613-350A-4762-A014-C2BA700B06EC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DbContextWithCustomDbSet", "DbContext\DbContextWithCustomDbSet.csproj", "{65ADE613-350A-4762-A014-C2BA700B06EC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionalChangeTracker", "RealV2\ConditionalChangeTracker\ConditionalChangeTracker.csproj", "{803D1122-EAD4-4593-9126-E28C8274D6D6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConditionalChangeTracker", "ConditionalChangeTracker\ConditionalChangeTracker.csproj", "{803D1122-EAD4-4593-9126-E28C8274D6D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingDbContext", "RealV2\ChangePublishingQueryable\ChangePublishingDbContext.csproj", "{CD3CF22B-1B11-4522-A26D-0A9929B52027}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingDbContext", "ChangePublishingQueryable\ChangePublishingDbContext.csproj", "{CD3CF22B-1B11-4522-A26D-0A9929B52027}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ChangePublishingDbContext.Core", "ChangePublishingDbContext.Core", "{13AF96F1-DC8B-4777-98AC-3DADF6DB0561}"
 EndProject
@@ -29,9 +29,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SignalR", "SignalR", "{359A
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{4EC9524F-D12D-4156-91D0-9BE1D1A6D923}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingSignalRHub", "RealV2\ChangePublishingSignalRHub\ChangePublishingSignalRHub.csproj", "{233977AC-4F11-458A-AFE4-331D54EA6AB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingSignalRHub", "ChangePublishingSignalRHub\ChangePublishingSignalRHub.csproj", "{233977AC-4F11-458A-AFE4-331D54EA6AB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingDbContextExample", "RealV2\ChangePublishingDbContextExample\ChangePublishingDbContextExample.csproj", "{1350A976-9CB0-46A7-B99F-9733DEF56729}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChangePublishingDbContextExample", "ChangePublishingDbContextExample\ChangePublishingDbContextExample.csproj", "{1350A976-9CB0-46A7-B99F-9733DEF56729}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
