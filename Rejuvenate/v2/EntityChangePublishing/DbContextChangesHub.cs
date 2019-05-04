@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EFExtensions;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
@@ -33,7 +34,8 @@ namespace Rejuvenate.v2.EntityChangePublishing
         public void GatherChanges(DbContext context)
         {
             context.ChangeTracker.DetectChanges();
-            Hubs.ForEach(hub => hub.GatherChanges(context.ChangeTracker));
+            var relations = context.GetRelationships();
+            Hubs.ForEach(hub => hub.GatherChanges(context.ChangeTracker, relations));
         }
 
         public void PublishChanges(DbContext context)

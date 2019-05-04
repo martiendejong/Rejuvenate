@@ -50,10 +50,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DbContextExtensions.cs" />
-    <Compile Include="DbContextWithSaveEvent.cs" />
+    <Compile Include="Events\ChangePublishingQueryable.cs" />
+    <Compile Include="Events\DbContextWithSaveEvent.cs" />
     <Compile Include="DbPropertyValuesCreateEntityExtensionMethods.cs" />
     <Compile Include="DbSetExtensions.cs" />
     <Compile Include="ExpressionHelpers.cs" />
+    <Compile Include="Events\IDbContextSaveListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

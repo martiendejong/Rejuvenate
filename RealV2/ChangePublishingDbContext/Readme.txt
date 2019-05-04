@@ -1,0 +1,1 @@
+﻿A changetracker that has a generic event per entitytype.

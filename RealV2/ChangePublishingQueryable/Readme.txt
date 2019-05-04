@@ -1,0 +1,1 @@
+﻿A DbContext that allows you to subscribe to a query and have the results published to you as entities are added, removed or modified.

@@ -20,10 +20,12 @@ namespace Rejuvenate.v2.EntityChangePublishing
             Handlers.Add((EntitiesChangedHandler<EntityType>)handler);
         }
 
-        public void GatherChanges(DbChangeTracker changeTracker)
+        public void GatherChanges(DbChangeTracker changeTracker, IEnumerable<Tuple<object, object, EntityState>> relations)
         {
             var entries = changeTracker.Entries<EntityType>();
             GatheredChanges = entries.Select(GetEntityChangedMessage).ToList().Where(m => m != null);
+            var relationsOfEntityType = relations.Where(relation => relation.Item1 as EntityType != null);
+            GatheredChanges = GatheredChanges.Union(relationsOfEntityType.Select(GetRelationshipChangedMessage));
         }
 
         public void PublishChanges()
@@ -59,6 +61,29 @@ namespace Rejuvenate.v2.EntityChangePublishing
         public static EntityChangeMessage<EntityType> GetEntityModifiedMessage(DbEntityEntry<EntityType> entry)
         {
             return new EntityChangeMessage<EntityType>(entry.State, entry.OriginalValues.ToEntity<EntityType>(), entry.Entity);
+        }
+
+        public static EntityChangeMessage<EntityType> GetRelationshipChangedMessage(Tuple<object, object, EntityState> tuple)
+        {
+            switch(tuple.Item3)
+            {
+                case EntityState.Added:
+                    return GetRelationshipAddedMessage(tuple);
+                case EntityState.Deleted:
+                    return GetRelationshipDeletedMessage(tuple);
+                default:
+                    throw new Exception("Only added or deleted relationships are supported");
+            }
+        }
+
+        public static EntityChangeMessage<EntityType> GetRelationshipAddedMessage(Tuple<object, object, EntityState> tuple)
+        {
+            return new EntityChangeMessage<EntityType>(EntityState.Modified, tuple.Item1 as EntityType, tuple.Item1 as EntityType);
+        }
+
+        public static EntityChangeMessage<EntityType> GetRelationshipDeletedMessage(Tuple<object, object, EntityState> tuple)
+        {//hier nog iets mee doen
+            return new EntityChangeMessage<EntityType>(EntityState.Modified, tuple.Item1 as EntityType, tuple.Item1 as EntityType);
         }
     }
 }

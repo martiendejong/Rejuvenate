@@ -59,12 +59,13 @@ namespace RejuvenatingExample.Controllers
             var channel2 = items.Subscribe<ExampleV2Hub>();
 
             var channel = V2Context.Games.Subscribe<ExampleV2Hub>();
-            V2Context.Games.Where(x2 => x2.Name.Length < 5).SubscribeChildEntity<Player, int?, ExampleV2Hub>
+            V2Context.Games.Where(x2 => x2.Name.Length < 5).SubscribeChildEntity<Player, ExampleV2Hub>
             (
-                player => player.GameId, 
-                id => V2Context.Games.SingleOrDefault(game => game.Id == id), 
-                channel
-            );
+                //player => player.GameId, 
+                //id => V2Context.Games.SingleOrDefault(game => game.Id == id), 
+                channel,
+                player => player.Game
+           );
 
 
             // todo use this for extension methods

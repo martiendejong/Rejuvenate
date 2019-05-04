@@ -87,6 +87,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="TestClasses\TestContext.cs" />
     <Compile Include="TestClasses\TestEntity.cs" />
     <Compile Include="TestClasses\TestHub.cs" />

@@ -7,8 +7,6 @@ namespace RejuvenatingTests.TestClasses
 {
     public interface ITestContext : Rejuvenate.Db.IDbContext
     {
-
-
         ChangePublishingDbSet<TestEntity> ChangePublishingEntities { get; }
 
         ChangePublishingDbSet<TestEntity2> ChangePublishingEntities2 { get; }
@@ -18,6 +16,8 @@ namespace RejuvenatingTests.TestClasses
     public class TestContext : ChangePublishingDbContext, ITestContext
     {
         #region Regular DbContext
+
+        public TestContext() : base("name=DefaultConnection") { }
 
         public TestContext(string connString) : base(connString)
         {

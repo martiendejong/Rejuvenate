@@ -1,0 +1,91 @@
+﻿@model ChangePublishingDbContextExample.Models.GameViewModel
+
+@{
+    ViewBag.Title = "Game";
+}
+
+<h2>Players</h2>
+
+<table class="table">
+
+    @foreach (var player in Model.Players)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => player.Name)
+            </td>
+        </tr>
+    }
+
+</table>
+
+<h2>Areas</h2>
+
+<table class="table">
+
+    @foreach (var area in Model.Areas)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => area.Name)
+            </td>
+        </tr>
+    }
+
+</table>
+
+@section  scripts
+{
+    @Scripts.Render("~/bundles/signalr")
+    @Scripts.Render("~/bundles/ChangePublisher")
+    <!--Add script to update the page and send messages.-->
+    <script type="text/javascript">
+
+            var myHub;
+
+            var itemsAdded = function (items)
+            {
+                /*items.forEach(function (item, index)
+                {
+                    var scope = angular.element(document.getElementById('body')).scope();
+                    scope.models.games.push(item);
+                    scope.$apply();
+                });*/
+            };
+
+            var itemsRemoved = function (items) {
+
+                /*items.forEach(function (item, index)
+                {
+                    // TODO
+                    var scope = angular.element(document.getElementById('body')).scope();
+                    var index = scope.models.games.findIndex(function(game) { return game.Id == item.Id; });
+                    scope.models.games[index] = item;
+                    scope.$apply();
+                });*/
+            };
+
+            var itemsUpdated = function (items) {
+                /*items.forEach(function (item, index)
+                {
+                    var scope = angular.element(document.getElementById('body')).scope();
+                    var index = scope.models.games.findIndex(function(game) { return game.Id == item.Id; });
+                    scope.models.games[index] = item;
+                    scope.$apply();
+                });*/
+            };
+
+            var hubStart = function()
+            {
+                //$.connection.gameHub.server.x();
+            }
+
+            $(function () {
+                // Declare a proxy to reference the hub.
+                myHub = $.connection.gameHub;
+                // start the change publisher
+                startChangePublisher(myHub, [@Html.Raw(string.Join(",", Model.Guids.Select(g => "\"" + g.ToString() + "\"")))], hubStart, itemsAdded, itemsRemoved, itemsUpdated);
+            });
+
+    </script>
+}

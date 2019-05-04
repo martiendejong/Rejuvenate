@@ -13,6 +13,8 @@ namespace RejuvenatingTests.TestClasses
         public int Key { get; set; }
 
         public TestEntity2 TestEntity2 { get; set; }
+
+        public string Description { get; set; }
     }
 
     public class TestEntity2

@@ -1,0 +1,1 @@
+﻿A DbContext with events for SaveStart and SaveCompleted.

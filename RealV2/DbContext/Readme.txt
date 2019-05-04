@@ -1,0 +1,1 @@
+﻿A class derived from DbContext with custom DbSet classes.

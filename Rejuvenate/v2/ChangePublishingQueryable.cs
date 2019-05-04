@@ -42,20 +42,24 @@ namespace Rejuvenate.v2
 
         #region Subscribe Linked Entity
 
-        public void SubscribeChildEntity<ChildEntityType, PrimaryKeyType>(Func<ChildEntityType, PrimaryKeyType> pathToForeignKey, Func<PrimaryKeyType, EntityType> getEntityByPrimaryKey, EntitiesChangedListener<EntityType> channel) where ChildEntityType : class, new()
+        public void SubscribeChildEntity<ChildEntityType/*, PrimaryKeyType*/>(/*Func<ChildEntityType, PrimaryKeyType> pathToForeignKey, Func<PrimaryKeyType, EntityType> getEntityByPrimaryKey,*/ EntitiesChangedListener<EntityType> channel, Expression<Func<ChildEntityType, EntityType>> reference) where ChildEntityType : class, new()
         {
-            SubscribeChildEntity(pathToForeignKey, getEntityByPrimaryKey, channel, (messages, childEntityChannel) => channel.Receive(messages));
+            SubscribeChildEntity(/*pathToForeignKey, getEntityByPrimaryKey, */channel, (messages, childEntityChannel) => channel.Receive(messages), reference);
         }
 
-        public void SubscribeChildEntity<ChildEntityType, PrimaryKeyType>(Func<ChildEntityType, PrimaryKeyType> pathToForeignKey, Func<PrimaryKeyType, EntityType> getEntityByPrimaryKey, EntitiesChangedListener<EntityType> channel, EntitiesChangedHandler<EntityType> handler) where ChildEntityType : class, new()
+        public void SubscribeChildEntity<ChildEntityType/*, PrimaryKeyType*/>(/*Func<ChildEntityType, PrimaryKeyType> pathToForeignKey, Func<PrimaryKeyType, EntityType> getEntityByPrimaryKey,*/ EntitiesChangedListener<EntityType> channel, EntitiesChangedHandler<EntityType> handler, Expression<Func<ChildEntityType, EntityType>> reference) where ChildEntityType : class, new()
         {
-            var childHandler = new LinkedEntityChangedHandler<ChildEntityType, EntityType, PrimaryKeyType>()
+            var childHandler = new LinkedEntityChangedHandler<ChildEntityType, EntityType/*, PrimaryKeyType*/>()
             {
-                PathToForeignKey = pathToForeignKey,
-                GetEntityByPrimaryKey = getEntityByPrimaryKey,
+                //PathToForeignKey = pathToForeignKey,
+                //GetEntityByPrimaryKey = getEntityByPrimaryKey,
                 DbContext = DbContext,
                 Channel = channel,
-                Handler = handler
+                Handler = handler,
+
+
+                //Expression = InnerExpression,
+                Reference = reference
             };
             DbContext.Hub.Subscribe<ChildEntityType>(childHandler.Receive);
         }
@@ -72,11 +76,11 @@ namespace Rejuvenate.v2
             return Subscribe(publisher.Receive);
         }
 
-        public void SubscribeChildEntity<ChildEntityType, PrimaryKeyType, HubType>(Func<ChildEntityType, PrimaryKeyType> pathToForeignKey, Func<PrimaryKeyType, EntityType> getEntityByPrimaryKey, EntitiesChangedListener<EntityType> channel) where HubType : IHub where ChildEntityType : class, new()
+        public void SubscribeChildEntity<ChildEntityType/*, PrimaryKeyType*/, HubType>(/*Func<ChildEntityType, PrimaryKeyType> pathToForeignKey, Func<PrimaryKeyType, EntityType> getEntityByPrimaryKey,*/ EntitiesChangedListener<EntityType> channel, Expression<Func<ChildEntityType, EntityType>> reference) where HubType : IHub where ChildEntityType : class, new()
         {
             SignalRHubListener<HubType> publisher = DbContext.SignalR.GetListener<HubType>();
 
-            SubscribeChildEntity(pathToForeignKey, getEntityByPrimaryKey, channel, publisher.Receive);
+            SubscribeChildEntity(/*pathToForeignKey, getEntityByPrimaryKey, */channel, publisher.Receive, reference);
         }
 
         #endregion

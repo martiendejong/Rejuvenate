@@ -1,0 +1,1 @@
+﻿A changetracked that allows subscription based on a filter which published results as they are modified, added to or removed from the filter.
