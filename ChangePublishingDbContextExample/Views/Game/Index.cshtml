@@ -65,7 +65,7 @@
                 });*/
             };
 
-            var itemsUpdated = function (items) {
+            var itemsChanged = function (items) {
                 /*items.forEach(function (item, index)
                 {
                     var scope = angular.element(document.getElementById('body')).scope();
@@ -84,7 +84,7 @@
                 // Declare a proxy to reference the hub.
                 myHub = $.connection.gameHub;
                 // start the change publisher
-                startChangePublisher(myHub, [@Html.Raw(string.Join(",", Model.Guids.Select(g => "\"" + g.ToString() + "\"")))], hubStart, itemsAdded, itemsRemoved, itemsUpdated);
+                startChangePublisher(myHub, [@Html.Raw(string.Join(",", Model.Guids.Select(g => "\"" + g.ToString() + "\"")))], hubStart, itemsAdded, itemsRemoved, itemsChanged);
             });
 
     </script>

@@ -19,8 +19,8 @@ namespace ChangePublishingDbContextTest
         public IEntityChangeTracker _changeTracker;
         public IEntityChangeTracker ChangeTracker => _changeTracker == null ? _changeTracker = new EntityChangeTracker(Context) : _changeTracker;
 
-        public IConditionalChangeTrackerManager<TestEntity> _conditionalChangeTrackerManager;
-        public IConditionalChangeTrackerManager<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new ConditionalChangeTrackerManager<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
+        public IConditionalChangeTrackerFactory<TestEntity> _conditionalChangeTrackerManager;
+        public IConditionalChangeTrackerFactory<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
 
 
 

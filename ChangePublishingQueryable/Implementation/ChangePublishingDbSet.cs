@@ -7,24 +7,28 @@ using System.Linq.Expressions;
 using System.Reflection;
 using ChangePublishingDbContext;
 using System.Data.Entity;
+using Microsoft.AspNet.SignalR.Hubs;
 
 namespace ChangePublishingDbContext
 {
-    public class ChangePublishingDbSet<EntityType> : IChangePublishingDbSet<EntityType> where EntityType : class, new()
+    public class ChangePublishingDbSet<EntityType> : AChangePublishingQueryable<EntityType>, IChangePublishingDbSet<EntityType> where EntityType : class, new()
     {
-        private IChangeTracker<EntityType> _changeTracker;
-
-        public ChangePublishingDbSet(IDbSet<EntityType> dbSet, IChangeTracker<EntityType> changeTracker)
+        public ChangePublishingDbSet(DbContext db, IDbSet<EntityType> dbSet, IChangeTracker<EntityType> changeTracker)
+            : base(db, dbSet, new ConditionalChangeTrackerFactory<EntityType>(changeTracker), new MapChangeTrackerFactory<EntityType>(changeTracker, db))
         {
             _dbSet = dbSet;
             _changeTracker = changeTracker;
         }
 
+        private IChangeTracker<EntityType> _changeTracker;
+
         private IDbSet<EntityType> _dbSet;
 
-        public Expression<Func<EntityType, bool>> Condition { get => (x) => true; set { } }
+        public override Expression<Func<EntityType, bool>> Filter => (x) => true;
 
-        public event EntitiesChangedHandler<EntityType> EntitiesChanged
+        protected override Expression<Func<EntityType, bool>> CombineFilter(Expression<Func<EntityType, bool>> expression) => expression;
+
+        public override event EntitiesChangedHandler<EntityType> EntitiesChanged
         {
             add
             {
@@ -36,21 +40,9 @@ namespace ChangePublishingDbContext
             }
         }
 
-        public ChangePublishingQueryable<EntityType> Where(Expression<Func<EntityType, bool>> expression)
-        {
-            var condtionalChangeTracker = new ConditionalChangeTrackerManager<EntityType>(_changeTracker);
-            return new ChangePublishingQueryable<EntityType>(_dbSet.Where(expression), condtionalChangeTracker, expression);
-        }
-
         #region implement IDbSet<EntityType>
 
-        public Type ElementType => _dbSet.ElementType;
-
-        public Expression Expression => _dbSet.Expression;
-
         public ObservableCollection<EntityType> Local => _dbSet.Local;
-
-        public IQueryProvider Provider => _dbSet.Provider;
 
         public EntityType Add(EntityType entity)
         {
@@ -72,11 +64,6 @@ namespace ChangePublishingDbContext
             return _dbSet.Find(keyValues);
         }
 
-        public IEnumerator<EntityType> GetEnumerator()
-        {
-            return _dbSet.GetEnumerator();
-        }
-
         public EntityType Remove(EntityType entity)
         {
             return _dbSet.Remove(entity);
@@ -90,11 +77,6 @@ namespace ChangePublishingDbContext
         IEnumerator IEnumerable.GetEnumerator()
         {
             return _dbSet.GetEnumerator();
-        }
-
-        IChangePublishingQueryable<EntityType> IChangePublishingQueryable<EntityType>.Where(Expression<Func<EntityType, bool>> expression)
-        {
-            return new ChangePublishingQueryable<EntityType>(_dbSet.Where(expression), new ConditionalChangeTrackerManager<EntityType>(_changeTracker), expression);
         }
 
         #endregion

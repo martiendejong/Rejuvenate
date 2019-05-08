@@ -28,7 +28,7 @@ namespace ChangePublishingDbContext
 
         public override IDbSet<EntityType> GetDerivedSet<EntityType>(DbSet<EntityType> dbSet)
         {
-            return new ChangePublishingDbSet<EntityType>(dbSet, EntityChangeTracker.Entity<EntityType>());
+            return new ChangePublishingDbSet<EntityType>(this, dbSet, EntityChangeTracker.Entity<EntityType>());
         }
 
         #endregion

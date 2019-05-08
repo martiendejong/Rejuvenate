@@ -7,60 +7,39 @@ using System.Linq.Expressions;
 using System.Reflection;
 using ChangePublishingDbContext;
 using System.Data.Entity;
+using Microsoft.AspNet.SignalR.Hubs;
 
 namespace ChangePublishingDbContext
 {
-    public class ChangePublishingQueryable<EntityType> : IChangePublishingQueryable<EntityType> where EntityType : class, new()
+    public class ChangePublishingQueryable<EntityType> : AChangePublishingQueryable<EntityType> where EntityType : class, new()
     {
-        private IConditionalChangeTrackerManager<EntityType> _changeTracker;
-
-        private IQueryable<EntityType> _queryable;
-
-        private Expression<Func<EntityType, bool>> _expression;
-
-        public Expression<Func<EntityType, bool>> Condition { get => _expression; set => _expression = value; }
-
-        public ChangePublishingQueryable(IQueryable<EntityType> queryable, IConditionalChangeTrackerManager<EntityType> changeTracker, Expression<Func<EntityType, bool>> expression)
+        public ChangePublishingQueryable(DbContext db, IQueryable<EntityType> queryable, IConditionalChangeTrackerFactory<EntityType> changeTrackerFactory, IMapChangeTrackerFactory<EntityType> mapChangeTrackerFactory, Expression<Func<EntityType, bool>> expression)
+            : base(db, queryable, changeTrackerFactory, mapChangeTrackerFactory)
         {
-            _queryable = queryable;
-            _changeTracker = changeTracker;
-            _expression = expression;
+            _filter = expression;
         }
 
-        public IChangePublishingQueryable<EntityType> Where(Expression<Func<EntityType, bool>> expression)
-        {
-            return new ChangePublishingQueryable<EntityType>(_queryable.Where(expression), _changeTracker, And(expression));
-        }
+        private Expression<Func<EntityType, bool>> _filter;
 
-        protected Expression<Func<EntityType, bool>> And(Expression<Func<EntityType, bool>> expression)
-        {
-            return _expression == null ? expression : _expression.And(expression);
-        }
+        public override Expression<Func<EntityType, bool>> Filter { get => _filter; }
 
-        public event EntitiesChangedHandler<EntityType> EntitiesChanged
+        override public event EntitiesChangedHandler<EntityType> EntitiesChanged
         {
             add
             {
-                _changeTracker.Where(_expression).EntitiesChanged += value;
+                _conditionalChangeTrackerFactory.Where(_filter).EntitiesChanged += value;
             }
             remove
             {
-                _changeTracker.Where(_expression).EntitiesChanged -= value;
+                _conditionalChangeTrackerFactory.Where(_filter).EntitiesChanged -= value;
             }
         }
 
-        #region implement IQueryable
+        protected override Expression<Func<EntityType, bool>> CombineFilter(Expression<Func<EntityType, bool>> filter) => And(filter);
 
-        public Type ElementType => _queryable.ElementType;
-
-        public Expression Expression => _queryable.Expression;
-
-        public IQueryProvider Provider => _queryable.Provider;
-
-        public IEnumerator<EntityType> GetEnumerator() => _queryable.GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => _queryable.GetEnumerator();
-
-        #endregion
+        protected Expression<Func<EntityType, bool>> And(Expression<Func<EntityType, bool>> filter)
+        {
+            return Filter == null ? filter : Filter.And(filter);
+        }
     }
 }

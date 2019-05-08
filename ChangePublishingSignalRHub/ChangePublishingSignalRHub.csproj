@@ -73,6 +73,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Implementation\ChangePublishingQueryableExtension.cs" />
     <Compile Include="Implementation\ChangePublishingSignalRHub.cs" />
     <Compile Include="Implementation\Publisher.cs" />
     <Compile Include="IPublisher.cs" />
@@ -92,6 +93,10 @@
     <ProjectReference Include="..\ChangePublishingDbContext\EntityChangeTracker.csproj">
       <Project>{F989FC8E-6EAA-4A6C-B61E-BC2D9346FD8B}</Project>
       <Name>EntityChangeTracker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConditionalChangeTracker\ConditionalChangeTracker.csproj">
+      <Project>{803d1122-ead4-4593-9126-e28c8274d6d6}</Project>
+      <Name>ConditionalChangeTracker</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

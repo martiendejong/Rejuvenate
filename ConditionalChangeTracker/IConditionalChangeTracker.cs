@@ -7,10 +7,19 @@ using System.Threading.Tasks;
 
 namespace ChangePublishingDbContext
 {
-    public interface IConditionalChangeTracker<EntityType> : IChangeTracker<EntityType> where EntityType : class, new()
+    public interface IEntityChangeProcessor<EntityType> where EntityType : class, new()
     {
-        Expression<Func<EntityType, bool>> Expression { get; }
-
         void Process(IEnumerable<EntityChange<EntityType>> entities);
     }
+
+    public interface IConditionalChangeTracker<EntityType> : IEntityChangeProcessor<EntityType>, IChangeTracker<EntityType> where EntityType : class, new()
+    {
+        Expression<Func<EntityType, bool>> Expression { get; }
+    }
+
+    public interface IMapChangeTracker<EntityType, ToEntityType> : IEntityChangeProcessor<EntityType>, IChangeTracker<ToEntityType> where ToEntityType : class, new() where EntityType : class, new()
+    {
+        Expression<Func<EntityType, ToEntityType>> Mapping { get; }
+    }
+
 }

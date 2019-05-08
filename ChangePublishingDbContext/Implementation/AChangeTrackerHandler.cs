@@ -13,14 +13,14 @@ namespace ChangePublishingDbContext
         public AChangeTrackerHandler(IChangeTracker<EntityType> changeTracker)
         {
             ChangeTracker = changeTracker;
-            changeTracker.EntitiesChanged += EntitiesChanged;
+            changeTracker.EntitiesChanged += Process;
         }
 
-        abstract public void EntitiesChanged(IEnumerable<EntityChange<EntityType>> entities);
+        abstract public void Process(IEnumerable<EntityChange<EntityType>> entities);
 
         public void Dispose()
         {
-            ChangeTracker.EntitiesChanged -= EntitiesChanged;
+            ChangeTracker.EntitiesChanged -= Process;
         }
     }
 }

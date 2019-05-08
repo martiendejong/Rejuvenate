@@ -1,4 +1,5 @@
 ﻿using ChangePublishingDbContext;
+using Microsoft.AspNet.SignalR.Hubs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,8 +15,12 @@ namespace ChangePublishingDbContext
     {
         event EntitiesChangedHandler<EntityType> EntitiesChanged;
 
-        Expression<Func<EntityType, bool>> Condition { get; set; }
+        Expression<Func<EntityType, bool>> Filter { get; }
 
         IChangePublishingQueryable<EntityType> Where(Expression<Func<EntityType, bool>> expression);
+
+        IChangePublishingQueryable<ToEntityType> Select<ToEntityType>(Expression<Func<EntityType, ToEntityType>> expression) where ToEntityType : class, new();
+
+        IPublisher<EntityType, HubType> Publisher<HubType>() where HubType : IHub;
     }
 }

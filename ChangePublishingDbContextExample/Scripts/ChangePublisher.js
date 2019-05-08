@@ -1,7 +1,7 @@
 ﻿function startChangePublisher(hub, publisherIds, hubStart, itemsAdded, itemsRemoved, itemsUpdated) {
     hub.client.itemsAdded = itemsAdded;
     hub.client.itemsRemoved = itemsRemoved;
-    hub.client.itemsUpdated = itemsUpdated;
+    hub.client.itemsChanged = itemsChanged;
 
     // Start the connection.
     $.connection.hub.start().done(function () {

@@ -34,6 +34,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ChangePublishingDbContext\bin\Debug\EntityFramework.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core">
+      <HintPath>..\ChangePublishingDbContextTest\bin\Debug\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -49,6 +52,7 @@
     <Compile Include="IChangePublishingQueryable.cs" />
     <Compile Include="Implementation\ChangePublishingDbContext.cs" />
     <Compile Include="Implementation\ChangePublishingDbSet.cs" />
+    <Compile Include="Implementation\AChangePublishingQueryable.cs" />
     <Compile Include="Implementation\ChangePublishingQueryable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,6 +60,10 @@
     <ProjectReference Include="..\ChangePublishingDbContext\EntityChangeTracker.csproj">
       <Project>{F989FC8E-6EAA-4A6C-B61E-BC2D9346FD8B}</Project>
       <Name>EntityChangeTracker</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ChangePublishingSignalRHub\ChangePublishingSignalRHub.csproj">
+      <Project>{233977ac-4f11-458a-afe4-331d54ea6ab9}</Project>
+      <Name>ChangePublishingSignalRHub</Name>
     </ProjectReference>
     <ProjectReference Include="..\ConditionalChangeTracker\ConditionalChangeTracker.csproj">
       <Project>{803D1122-EAD4-4593-9126-E28C8274D6D6}</Project>

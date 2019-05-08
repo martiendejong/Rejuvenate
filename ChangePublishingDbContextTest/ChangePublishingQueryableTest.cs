@@ -18,15 +18,15 @@ namespace ChangePublishingDbContextTest
         public IEntityChangeTracker _changeTracker;
         public IEntityChangeTracker ChangeTracker => _changeTracker == null ? _changeTracker = new EntityChangeTracker(Context) : _changeTracker;
 
-        public IConditionalChangeTrackerManager<TestEntity> _conditionalChangeTrackerManager;
-        public IConditionalChangeTrackerManager<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new ConditionalChangeTrackerManager<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
+        public IConditionalChangeTrackerFactory<TestEntity> _conditionalChangeTrackerManager;
+        public IConditionalChangeTrackerFactory<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
 
         [TestMethod]
         public void EntitiesChanged_ShouldFireWhenAnEntityIsAddedThatMeetsTheConditions()
         {
             var count = 0;
 
-            var q = new ChangePublishingQueryable<TestEntity>(Context.TestEntities, ConditionalChangeTrackerManager, (x) => true);
+            var q = new ChangePublishingQueryable<TestEntity>(Context as DbContext, Context.TestEntities, ConditionalChangeTrackerManager, null, (x) => true);
             q.Where(entity => entity.Description.StartsWith("b")).EntitiesChanged += (entities) => count++;
 
             Context.TestEntities.Add(new TestEntity { Key = 1, Description = "b" });
@@ -40,7 +40,7 @@ namespace ChangePublishingDbContextTest
         {
             var count = 0;
 
-            var q = new ChangePublishingQueryable<TestEntity>(Context.TestEntities, ConditionalChangeTrackerManager, (x) => true);
+            var q = new ChangePublishingQueryable<TestEntity>(Context as DbContext, Context.TestEntities, ConditionalChangeTrackerManager, null, (x) => true);
             q.Where(entity => entity.Description.StartsWith("q")).EntitiesChanged += (entities) => count++;
 
             Context.TestEntities.Add(new TestEntity { Key = 1, Description = "b" });
@@ -60,8 +60,8 @@ namespace ChangePublishingDbContextTest
 
             Context = new TestContextWithSaveEvent (@"Server=.\SQLEXPRESS64; Database=RejuvenatingTests; Integrated Security=True;");
             _changeTracker = new EntityChangeTracker(Context);
-            _conditionalChangeTrackerManager = new ConditionalChangeTrackerManager<TestEntity>(ChangeTracker.Entity<TestEntity>());
-            var q = new ChangePublishingQueryable<TestEntity>(Context.TestEntities, ConditionalChangeTrackerManager, (x) => true);
+            _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>());
+            var q = new ChangePublishingQueryable<TestEntity>(Context as DbContext, Context.TestEntities, ConditionalChangeTrackerManager, null, (x) => true);
             q.Where(entity => entity.Description.StartsWith("q")).EntitiesChanged += (entities) => count++;
 
             var entity2 = new TestEntity2 { Key = 1, TestEntities = new List<TestEntity> { entity1 } };
@@ -83,8 +83,8 @@ namespace ChangePublishingDbContextTest
 
             Context = new TestContextWithSaveEvent (@"Server=.\SQLEXPRESS64; Database=RejuvenatingTests; Integrated Security=True;");
             _changeTracker = new EntityChangeTracker(Context);
-            _conditionalChangeTrackerManager = new ConditionalChangeTrackerManager<TestEntity>(ChangeTracker.Entity<TestEntity>());
-            var q = new ChangePublishingQueryable<TestEntity>(Context.TestEntities, ConditionalChangeTrackerManager, (x) => true);
+            _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>());
+            var q = new ChangePublishingQueryable<TestEntity>(Context as DbContext, Context.TestEntities, ConditionalChangeTrackerManager, null, (x) => true);
             q.Where(entity => entity.Description.StartsWith("q")).EntitiesChanged += (entities) => count++;
 
             var entity2 = new TestEntity2 { Key = 1, TestEntities = new List<TestEntity> { entity1 } };

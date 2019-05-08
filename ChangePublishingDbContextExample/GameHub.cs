@@ -8,6 +8,5 @@ namespace ChangePublishingDbContextExample
 {
     public class GameHub : ChangePublishingSignalRHub
     {
-
     }
 }

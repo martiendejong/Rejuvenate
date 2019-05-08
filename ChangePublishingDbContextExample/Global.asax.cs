@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -18,6 +20,13 @@ namespace ChangePublishingDbContextExample
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            var serializerSettings = new JsonSerializerSettings();
+            serializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Serialize;
+            serializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.Objects;
+
+            var serializer = JsonSerializer.Create(serializerSettings);
+            GlobalHost.DependencyResolver.Register(typeof(JsonSerializer), () => serializer);
         }
     }
 }
