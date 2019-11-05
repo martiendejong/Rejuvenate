@@ -4,7 +4,7 @@
     ViewBag.Title = "Game";
 }
 
-<h2>Players</h2>
+<h2>Players in Game Lobby</h2>
 
 <table class="table">
 
@@ -19,20 +19,14 @@
 
 </table>
 
-<h2>Areas</h2>
-
-<table class="table">
-
-    @foreach (var area in Model.Areas)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => area.Name)
-            </td>
-        </tr>
-    }
-
-</table>
+<form>
+    <div class="form-group">
+        <label for="PlayerName">Name</label>
+        <input type="text" class="form-control" id="PlayerName" placeholder="Enter name">
+    </div>
+    <button type="button" class="btn btn-primary" id="JoinGameButton">Join Game</button>
+    <button type="button" class="btn btn-primary" id="ClearLobbyButton">(Admin) Clear Lobby</button>
+</form>
 
 @section  scripts
 {
@@ -45,6 +39,7 @@
 
             var itemsAdded = function (items)
             {
+                alert('');
                 /*items.forEach(function (item, index)
                 {
                     var scope = angular.element(document.getElementById('body')).scope();
@@ -86,6 +81,14 @@
                 // start the change publisher
                 startChangePublisher(myHub, [@Html.Raw(string.Join(",", Model.Guids.Select(g => "\"" + g.ToString() + "\"")))], hubStart, itemsAdded, itemsRemoved, itemsChanged);
             });
+
+        $('#JoinGameButton').click(function () {
+            $.post("Game/AddPlayer", { name: $('#PlayerName').val() });
+        });
+
+        $('#ClearLobbyButton').click(function () {
+            $.post("Game/ClearList");
+        });
 
     </script>
 }

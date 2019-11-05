@@ -6,45 +6,50 @@ using System.Web.Mvc;
 using ChangePublishingDbContextExample.Models;
 using ChangePublishingDbContext;
 using System.Data.Entity;
+using System.Net;
 
 namespace ChangePublishingDbContextExample.Controllers
 {
     public class GameController : Controller
     {
-        private IGameContext db;
+        private IGameContext DbContext;
 
         public GameController(IGameContext dbContext)
         {
-            db = dbContext;
+            DbContext = dbContext;
         }
 
-        public ActionResult TestAddPlayer()
-        {
-            var vm = new GameViewModel
-            {
-            };
-
-            var area = db.Areas.FirstOrDefault();
-            db.Players.Add(new Player { Name = "yo", Area = area });
-            db.SaveChanges();
-
-            return View(vm);
-        }
-
-            // GET: Game
+        // GET: Game
         public ActionResult Index()
         {
-            var x = db.Players.Select(p => p.Area);
-            var pub = x.Publisher<GameHub>();
-
             var vm = new GameViewModel
             {
-                Players = db.Players,
-                Areas = db.Areas,
-                Guids = new Guid[] { db.Players.Select(p => p.Area).Publisher<GameHub>().Id, db.Areas.Publisher<GameHub>().Id }
+                Players = DbContext.Players,
+                Areas = DbContext.Areas,
+                Guids = new Guid[] { DbContext.Players.Select(p => p.Area).Publisher<GameHub>().Id, DbContext.Areas.Publisher<GameHub>().Id, DbContext.Players.Publisher<GameHub>().Id }
             };
 
             return View(vm);
+        }
+
+        [HttpPost]
+        public ActionResult AddPlayer(string name)
+        {            
+            var area = DbContext.Areas.FirstOrDefault();
+            DbContext.Players.Add(new Player { Name = name, Area = area });
+            DbContext.SaveChanges();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
+        public ActionResult ClearList()
+        {
+            var players = DbContext.Players.ToList();
+            players.ForEach(p => DbContext.Players.Remove(p));
+            DbContext.SaveChanges();
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
     }
 }
