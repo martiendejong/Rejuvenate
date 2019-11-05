@@ -26,7 +26,12 @@ namespace ChangePublishingDbContextExample.Controllers
             {
                 Players = DbContext.Players,
                 Areas = DbContext.Areas,
-                Guids = new Guid[] { DbContext.Players.Select(p => p.Area).Publisher<GameHub>().Id, DbContext.Areas.Publisher<GameHub>().Id, DbContext.Players.Publisher<GameHub>().Id }
+                Guids = new Guid[] 
+                {
+                    /*DbContext.Players.Select(p => p.Area).Publisher<GameHub>().Id,
+                    DbContext.Areas.Publisher<GameHub>().Id,*/
+                    DbContext.Players.Publisher<GameHub>().Id
+                }
             };
 
             return View(vm);

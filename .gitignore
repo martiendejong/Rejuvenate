@@ -3,3 +3,5 @@ obj/
 packages/
 /.vs
 /archief
+/ChangePublishingDbContextExample/App_Data/aspnet-ChangePublishingDbContextExample-20190427025547_log.ldf
+/ChangePublishingDbContextExample/App_Data/aspnet-ChangePublishingDbContextExample-20190427025547.mdf
