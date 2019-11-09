@@ -9,6 +9,6 @@ namespace ChangePublishingDbContext
 {
     public interface IDbContextWithCustomDbSet
     {
-        IDbSet<Entity> GetDerivedSet<Entity>(DbSet<Entity> dbSet) where Entity : class, new();
+        IDbSet<Entity> GetCustomDbSet<Entity>(DbSet<Entity> dbSet) where Entity : class, new();
     }
 }

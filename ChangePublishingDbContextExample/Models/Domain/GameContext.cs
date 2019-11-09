@@ -1,8 +1,5 @@
 ﻿
 using ChangePublishingDbContext;
-using ChangePublishingDbContext.Implementation;
-using System.Collections.Generic;
-using System.Data.Entity;
 
 namespace ChangePublishingDbContextExample.Models
 {
@@ -11,7 +8,6 @@ namespace ChangePublishingDbContextExample.Models
         IChangePublishingDbSet<Player> Players { get; }
 
         IChangePublishingDbSet<Area> Areas { get; }
-
     }
 
     public class GameContext : ChangePublishingDbContext.ChangePublishingDbContext, IGameContext

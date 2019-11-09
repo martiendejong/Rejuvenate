@@ -8,27 +8,27 @@ using System.Threading.Tasks;
 
 namespace ChangePublishingDbContext.Implementation
 {
-    public class ChangeTracker<EntityType> : IChangesProcessor, IChangeTracker<EntityType> where EntityType : class, new()
+    public class ChangeTracker<EntityType> : IChangesCollector, IChangeTracker<EntityType> where EntityType : class, new()
     {
         public event EntitiesChangedHandler<EntityType> EntitiesChanged;
 
-        public void GatherChanges(DbChangeTracker changeTracker, IEnumerable<ChangedRelationship> relations)
+        public void CollectChanges(DbChangeTracker changeTracker, IEnumerable<ChangedRelationship> relations)
         {
             var entries = changeTracker.Entries<EntityType>();
-            GatheredChanges = entries.Select(GetEntityChangedMessage).ToList().Where(m => m != null);
+            CollectedChanges = entries.Select(GetEntityChangedMessage).ToList().Where(m => m != null);
             var relationsOfEntityType = relations.Where(relation => relation.Parent as EntityType != null);
-            GatheredChanges = GatheredChanges.Union(relationsOfEntityType.Select(GetRelationshipChangedMessage));
+            CollectedChanges = CollectedChanges.Union(relationsOfEntityType.Select(GetRelationshipChangedMessage));
         }
 
         public void PublishChanges()
         {
-            if (GatheredChanges.Any())
+            if (CollectedChanges.Any())
             {
-                EntitiesChanged?.Invoke(GatheredChanges);
+                EntitiesChanged?.Invoke(CollectedChanges);
             }
         }
 
-        protected IEnumerable<EntityChange<EntityType>> GatheredChanges;
+        protected IEnumerable<EntityChange<EntityType>> CollectedChanges;
 
         protected static EntityChange<EntityType> GetEntityChangedMessage(DbEntityEntry<EntityType> entry)
         {

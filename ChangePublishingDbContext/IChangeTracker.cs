@@ -9,9 +9,9 @@ namespace ChangePublishingDbContext
 {
     public delegate void EntitiesChangedHandler<EntityType>(IEnumerable<EntityChange<EntityType>> entities) where EntityType : class, new();
 
-    public interface IChangesProcessor
+    public interface IChangesCollector
     {
-        void GatherChanges(DbChangeTracker changeTracker, IEnumerable<ChangedRelationship> relations);
+        void CollectChanges(DbChangeTracker changeTracker, IEnumerable<ChangedRelationship> relations);
 
         void PublishChanges();
     }

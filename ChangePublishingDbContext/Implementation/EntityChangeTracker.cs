@@ -8,7 +8,7 @@ namespace ChangePublishingDbContext.Implementation
 {
     public class EntityChangeTracker : ADbContextSaveHandler, IEntityChangeTracker
     {
-        public List<IChangesProcessor> ChangeTrackers = new List<IChangesProcessor>();
+        protected List<IChangesCollector> ChangeCollectors = new List<IChangesCollector>();
 
         public EntityChangeTracker(IDbContextWithSaveEvent context) : base(context)
         {
@@ -18,22 +18,21 @@ namespace ChangePublishingDbContext.Implementation
         {
             context.ChangeTracker.DetectChanges();
             var relations = context.GetChangedRelationships();
-            ChangeTrackers.ForEach(collector => collector.GatherChanges(context.ChangeTracker, relations));
+            ChangeCollectors.ForEach(collector => collector.CollectChanges(context.ChangeTracker, relations));
         }
 
         override public void SaveCompleted(IDbContextWithSaveEvent context)
         {
-            ChangeTrackers.ForEach(collector => collector.PublishChanges());
+            ChangeCollectors.ForEach(collector => collector.PublishChanges());
         }
 
         public IChangeTracker<EntityType> Entity<EntityType>() where EntityType : class, new()
         {
-            var collector = ChangeTrackers.OfType<IChangeTracker<EntityType>>().FirstOrDefault();
+            var collector = ChangeCollectors.OfType<IChangeTracker<EntityType>>().FirstOrDefault();
             if(collector == null)
             {
                 var newCollector = new ChangeTracker<EntityType>();
-                ChangeTrackers.Add(newCollector);
-
+                ChangeCollectors.Add(newCollector);
                 collector = newCollector;
             }
             return collector;

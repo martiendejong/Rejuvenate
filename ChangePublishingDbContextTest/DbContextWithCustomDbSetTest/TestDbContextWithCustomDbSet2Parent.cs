@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace ChangePublishingDbContextTest
 {
-    public class TestDbContextWithCustomDbSet2Parent : DbContextWithCustomDbSet
+    public class TestDbContextWithCustomDbSet2Parent : ADbContextWithCustomDbSet
     {
-        protected override string _derivedSetName => "ICustomDbSet";
+        protected override string _customDbSetClassName => "ICustomDbSet";
 
-        public override IDbSet<EntityType> GetDerivedSet<EntityType>(DbSet<EntityType> dbSet)
+        public override IDbSet<EntityType> GetCustomDbSet<EntityType>(DbSet<EntityType> dbSet)
         {
             return new TestDbSet<EntityType>(dbSet);
         }

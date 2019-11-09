@@ -11,11 +11,11 @@ using System.Threading.Tasks;
 
 namespace ChangePublishingDbContext
 {
-    public abstract class DbContextWithCustomDbSet : DbContext, IDbContextWithCustomDbSet
+    public abstract class ADbContextWithCustomDbSet : DbContext, IDbContextWithCustomDbSet
     {
-        abstract protected string _derivedSetName { get; }
+        abstract protected string _customDbSetClassName { get; }
 
-        abstract public IDbSet<EntityType> GetDerivedSet<EntityType>(DbSet<EntityType> dbSet) where EntityType : class, new();
+        abstract public IDbSet<EntityType> GetCustomDbSet<EntityType>(DbSet<EntityType> dbSet) where EntityType : class, new();
 
         private Dictionary<Type, object> _dbSets;
 
@@ -34,19 +34,19 @@ namespace ChangePublishingDbContext
             }
 
             //Otherwise resolve, store reference and return 
-            var resolvedSet = GetDerivedSet(base.Set<EntityType>());
+            var resolvedSet = GetCustomDbSet(base.Set<EntityType>());
             _dbSets.Add(typeof(EntityType), resolvedSet);
             return resolvedSet;
         }
 
         private void AssignDerivedSets()
         {
-            GetDerivedSetsAndTypes(_derivedSetName).ToList().ForEach(derivedSet => derivedSet.Key.SetValue(this, GetGenericSetMethod(derivedSet.Value).Invoke(this, null)));
+            GetDerivedSetsAndTypes(_customDbSetClassName).ToList().ForEach(derivedSet => derivedSet.Key.SetValue(this, GetGenericSetMethod(derivedSet.Value).Invoke(this, null)));
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            GetDerivedSetsAndTypes(_derivedSetName).ToList().ForEach(derivedSet => GetGenericModelBuilderEntityMethod(modelBuilder, derivedSet.Value).Invoke(modelBuilder, null));
+            GetDerivedSetsAndTypes(_customDbSetClassName).ToList().ForEach(derivedSet => GetGenericModelBuilderEntityMethod(modelBuilder, derivedSet.Value).Invoke(modelBuilder, null));
         }
 
         #region reflection stuff
@@ -94,25 +94,25 @@ namespace ChangePublishingDbContext
         #region Inherit constructors from the base class
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet() : base() { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet() : base() { AssignDerivedSets(); }
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet(DbCompiledModel model) : base(model) { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet(DbCompiledModel model) : base(model) { AssignDerivedSets(); }
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet(string nameOrconnectionString) : base(nameOrconnectionString) { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet(string nameOrconnectionString) : base(nameOrconnectionString) { AssignDerivedSets(); }
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet(string nameOrConnectiongString, DbCompiledModel model) : base(nameOrConnectiongString, model) { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet(string nameOrConnectiongString, DbCompiledModel model) : base(nameOrConnectiongString, model) { AssignDerivedSets(); }
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet(DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection) { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet(DbConnection existingConnection, bool contextOwnsConnection) : base(existingConnection, contextOwnsConnection) { AssignDerivedSets(); }
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet(ObjectContext objectContext, bool contextOwnsObjectContext) : base(objectContext, contextOwnsObjectContext) { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet(ObjectContext objectContext, bool contextOwnsObjectContext) : base(objectContext, contextOwnsObjectContext) { AssignDerivedSets(); }
 
         ///<summary>Same as with DbContext</summary>
-        public DbContextWithCustomDbSet(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection, model, contextOwnsConnection) { AssignDerivedSets(); }
+        public ADbContextWithCustomDbSet(DbConnection existingConnection, DbCompiledModel model, bool contextOwnsConnection) : base(existingConnection, model, contextOwnsConnection) { AssignDerivedSets(); }
 
         #endregion
     }

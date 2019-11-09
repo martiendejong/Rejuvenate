@@ -12,7 +12,7 @@ using System.Data.Entity.Core.Objects;
 
 namespace ChangePublishingDbContext
 {
-    public class ChangePublishingDbContext : DbContextWithCustomDbSet, IChangePublishingDbContext
+    public class ChangePublishingDbContext : ADbContextWithCustomDbSet, IChangePublishingDbContext
     {
         #region ChangeTracker property
 
@@ -24,9 +24,9 @@ namespace ChangePublishingDbContext
 
         #region Implement abstract DbContextWithCustomDbSet
 
-        protected override string _derivedSetName => "IChangePublishingDbSet";
+        protected override string _customDbSetClassName => "IChangePublishingDbSet";
 
-        public override IDbSet<EntityType> GetDerivedSet<EntityType>(DbSet<EntityType> dbSet)
+        public override IDbSet<EntityType> GetCustomDbSet<EntityType>(DbSet<EntityType> dbSet)
         {
             return new ChangePublishingDbSet<EntityType>(this, dbSet, EntityChangeTracker.Entity<EntityType>());
         }
