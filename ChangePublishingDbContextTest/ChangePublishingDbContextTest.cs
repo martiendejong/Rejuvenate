@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Collections;
 using System.Collections.Generic;
-using ChangePublishingDbContext.Implementation;
+using Rejuvenate.Implementation;
 using System.Linq;
 
 namespace ChangePublishingDbContextTest
@@ -16,11 +16,11 @@ namespace ChangePublishingDbContextTest
 
 
 
-        public IEntityChangeTracker _changeTracker;
-        public IEntityChangeTracker ChangeTracker => _changeTracker == null ? _changeTracker = new EntityChangeTracker(Context) : _changeTracker;
+        public IChangesPublisherFactory _changeTracker;
+        public IChangesPublisherFactory ChangeTracker => _changeTracker == null ? _changeTracker = new ChangesPublisherFactory(Context) : _changeTracker;
 
-        public IConditionalChangeTrackerFactory<TestEntity> _conditionalChangeTrackerManager;
-        public IConditionalChangeTrackerFactory<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
+        public IEntityChangeFilterProcessorFactory<TestEntity> _conditionalChangeTrackerManager;
+        public IEntityChangeFilterProcessorFactory<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new EntityChangeFilterProcessorFactory<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
 
 
 
@@ -35,6 +35,19 @@ namespace ChangePublishingDbContextTest
             Context.SaveChanges();
 
             Assert.IsTrue(count == 1);
+        }
+
+        [TestMethod]
+        public void ValueChanged_ShouldFireWhenAnEntityIsAdded()
+        {
+            int sumValue = 0;
+
+            IChangePublishingValue<TestEntity, int> v = Context.TestEntities.Sum(t => t.Key);
+            v.ValueChanged += v2 => sumValue = v2;
+            Context.TestEntities.Add(new TestEntity { Key = 15, Description = "b" });
+            Context.SaveChanges();
+
+            Assert.IsTrue(sumValue > 15);
         }
 
         [TestMethod]

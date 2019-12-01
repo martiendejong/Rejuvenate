@@ -1,5 +1,5 @@
 ﻿
-using ChangePublishingDbContext;
+using Rejuvenate;
 
 namespace ChangePublishingDbContextExample.Models
 {
@@ -10,7 +10,7 @@ namespace ChangePublishingDbContextExample.Models
         IChangePublishingDbSet<Area> Areas { get; }
     }
 
-    public class GameContext : ChangePublishingDbContext.ChangePublishingDbContext, IGameContext
+    public class GameContext : Rejuvenate.ChangePublishingDbContext, IGameContext
     {
         public GameContext() : base("name=DefaultConnection") { }
 

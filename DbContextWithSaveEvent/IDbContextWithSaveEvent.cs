@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public delegate void DbContextEventHandler(IDbContextWithSaveEvent context);
 
@@ -20,5 +20,7 @@ namespace ChangePublishingDbContext
         Task<int> SaveChangesAsync();
 
         int SaveChanges();
+
+        DbEntityEntry<TEntity> Entry<TEntity>(TEntity entity) where TEntity : class;
     }
 }

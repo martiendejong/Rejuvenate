@@ -1,4 +1,4 @@
-﻿using ChangePublishingDbContext;
+﻿using Rejuvenate;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
 using System;
@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public interface IHubContextFactory
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChangePublishingDbContext.Implementation;
-using ChangePublishingDbContext;
+using Rejuvenate.Implementation;
+using Rejuvenate;
 
 namespace ChangePublishingDbContextTest
 {

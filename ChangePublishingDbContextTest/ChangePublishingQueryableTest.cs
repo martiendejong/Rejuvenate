@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Collections;
 using System.Collections.Generic;
-using ChangePublishingDbContext.Implementation;
+using Rejuvenate.Implementation;
 using System.Data.Entity;
 using System.Linq;
 
@@ -15,11 +15,11 @@ namespace ChangePublishingDbContextTest
         //public ITestContext Context = new TestContextWithSaveEvent(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
         public ITestContextWithSaveEvent Context = new TestContextWithSaveEvent (@"Server=.\SQLEXPRESS64; Database=RejuvenatingTests; Integrated Security=True;");
 
-        public IEntityChangeTracker _changeTracker;
-        public IEntityChangeTracker ChangeTracker => _changeTracker == null ? _changeTracker = new EntityChangeTracker(Context) : _changeTracker;
+        public IChangesPublisherFactory _changeTracker;
+        public IChangesPublisherFactory ChangeTracker => _changeTracker == null ? _changeTracker = new ChangesPublisherFactory(Context) : _changeTracker;
 
-        public IConditionalChangeTrackerFactory<TestEntity> _conditionalChangeTrackerManager;
-        public IConditionalChangeTrackerFactory<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
+        public IEntityChangeFilterProcessorFactory<TestEntity> _conditionalChangeTrackerManager;
+        public IEntityChangeFilterProcessorFactory<TestEntity> ConditionalChangeTrackerManager => _conditionalChangeTrackerManager == null ? _conditionalChangeTrackerManager = new EntityChangeFilterProcessorFactory<TestEntity>(ChangeTracker.Entity<TestEntity>()) : _conditionalChangeTrackerManager;
 
         [TestMethod]
         public void EntitiesChanged_ShouldFireWhenAnEntityIsAddedThatMeetsTheConditions()
@@ -59,8 +59,8 @@ namespace ChangePublishingDbContextTest
             Context.SaveChanges();
 
             Context = new TestContextWithSaveEvent (@"Server=.\SQLEXPRESS64; Database=RejuvenatingTests; Integrated Security=True;");
-            _changeTracker = new EntityChangeTracker(Context);
-            _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>());
+            _changeTracker = new ChangesPublisherFactory(Context);
+            _conditionalChangeTrackerManager = new EntityChangeFilterProcessorFactory<TestEntity>(ChangeTracker.Entity<TestEntity>());
             var q = new ChangePublishingQueryable<TestEntity>(Context as DbContext, Context.TestEntities, ConditionalChangeTrackerManager, null, (x) => true);
             q.Where(entity => entity.Description.StartsWith("q")).EntitiesChanged += (entities) => count++;
 
@@ -82,8 +82,8 @@ namespace ChangePublishingDbContextTest
             Context.SaveChanges();
 
             Context = new TestContextWithSaveEvent (@"Server=.\SQLEXPRESS64; Database=RejuvenatingTests; Integrated Security=True;");
-            _changeTracker = new EntityChangeTracker(Context);
-            _conditionalChangeTrackerManager = new ConditionalChangeTrackerFactory<TestEntity>(ChangeTracker.Entity<TestEntity>());
+            _changeTracker = new ChangesPublisherFactory(Context);
+            _conditionalChangeTrackerManager = new EntityChangeFilterProcessorFactory<TestEntity>(ChangeTracker.Entity<TestEntity>());
             var q = new ChangePublishingQueryable<TestEntity>(Context as DbContext, Context.TestEntities, ConditionalChangeTrackerManager, null, (x) => true);
             q.Where(entity => entity.Description.StartsWith("q")).EntitiesChanged += (entities) => count++;
 

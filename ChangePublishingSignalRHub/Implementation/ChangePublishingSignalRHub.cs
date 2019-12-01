@@ -5,21 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 using Microsoft.AspNet.SignalR.Hubs;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Data.Entity;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public class ChangePublishingSignalRHub : Hub
     {
         public static Dictionary<Guid, IPublisher> Publishers = new Dictionary<Guid, IPublisher>();
 
-        public void Receive(List<string> publisherIds)
+        /*public void Receive(List<string> publisherIds)
         {
             Subscribe(publisherIds);
 
             Clients.Client(Context.ConnectionId).hoi();
-        }
+        }*/
 
         public void Subscribe(string publisherId)
         {

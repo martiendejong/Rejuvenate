@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Collections;
 using System.Collections.Generic;
-using ChangePublishingDbContext.Implementation;
+using Rejuvenate.Implementation;
 
 namespace ChangePublishingDbContextTest
 {
@@ -13,8 +13,8 @@ namespace ChangePublishingDbContextTest
         //public ITestContext Context = new TestContextWithSaveEvent(@"Server=(localdb)\mssqllocaldb;Database=EFProviders.InMemory;Trusted_Connection=True;");
         public ITestContextWithSaveEvent Context = new TestContextWithSaveEvent (@"Server=.\SQLEXPRESS64; Database=RejuvenatingTests; Integrated Security=True;");
 
-        public IEntityChangeTracker _changeTracker;
-        public IEntityChangeTracker ChangeTracker => _changeTracker == null ? _changeTracker = new EntityChangeTracker(Context) : _changeTracker;
+        public IChangesPublisherFactory _changeTracker;
+        public IChangesPublisherFactory ChangeTracker => _changeTracker == null ? _changeTracker = new ChangesPublisherFactory(Context) : _changeTracker;
 
         [TestMethod]
         public void EntitiesChanged_ShouldFireWhenAnEntityIsAdded()

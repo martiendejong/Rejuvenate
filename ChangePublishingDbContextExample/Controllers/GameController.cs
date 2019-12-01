@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using ChangePublishingDbContextExample.Models;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Data.Entity;
 using System.Net;
 

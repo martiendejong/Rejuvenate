@@ -1,0 +1,12 @@
+*Maak een nieuw ASPN.NET MVC project.
+*kopieer packages.config uit het cardgame project.
+*Update-Package -reinstall (in package manager console)
+*Kopieer alles uit App_Start van het cardgame project.
+*Pas NinjectWebCommon.cs aan aan je applicatie.
+*Pas de namespace aan van alle files naar je eigen namespace.
+*Kopieer de inhoud van Global.asax.cs
+*Kopieer de inhoud van de map Models en pas de namespace aan.
+*Kopieer Startup.cs en fix de namespace.
+*Update evt. handmatig packages zoals MVC5.
+*Kopieer uit views account, manage en shared. Pas de namespace aan.
+*EF naar 6.2.0 gedowngrade, daarna kon ik migrations toevoegen.

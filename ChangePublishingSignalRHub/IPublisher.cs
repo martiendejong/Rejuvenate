@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public interface IPublisher<EntityType, HubType> : IPublisher where EntityType : class, new()
     {

@@ -5,22 +5,22 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Data.Entity;
 using Microsoft.AspNet.SignalR.Hubs;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public class ChangePublishingDbSet<EntityType> : AChangePublishingQueryable<EntityType>, IChangePublishingDbSet<EntityType> where EntityType : class, new()
     {
-        public ChangePublishingDbSet(DbContext db, IDbSet<EntityType> dbSet, IChangeTracker<EntityType> changeTracker)
-            : base(db, dbSet, new ConditionalChangeTrackerFactory<EntityType>(changeTracker), new MapChangeTrackerFactory<EntityType>(changeTracker, db))
+        public ChangePublishingDbSet(DbContext db, IDbSet<EntityType> dbSet, IChangesPublisher<EntityType> changeTracker)
+            : base(db, dbSet, new EntityChangeFilterProcessorFactory<EntityType>(changeTracker), new EntityChangeMappingProcessorFactory<EntityType>(changeTracker, db))
         {
             _dbSet = dbSet;
-            _changeTracker = changeTracker;
+            _bus = changeTracker;
         }
 
-        private IChangeTracker<EntityType> _changeTracker;
+        private IChangesPublisher<EntityType> _bus;
 
         private IDbSet<EntityType> _dbSet;
 
@@ -32,11 +32,11 @@ namespace ChangePublishingDbContext
         {
             add
             {
-                _changeTracker.EntitiesChanged += value;
+                _bus.EntitiesChanged += value;
             }
             remove
             {
-                _changeTracker.EntitiesChanged -= value;
+                _bus.EntitiesChanged -= value;
             }
         }
 

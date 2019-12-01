@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Collections;
 using System.Collections.Generic;
-using ChangePublishingDbContext.Implementation;
+using Rejuvenate.Implementation;
 using System.Linq;
 using Microsoft.AspNet.SignalR;
 using Moq;
@@ -22,20 +22,20 @@ namespace ChangePublishingDbContextTest
         public void ClientShouldGetMessages()
         {
             var called = false;
+            var clientId = "1";
 
-            var mockFactory = new Mock<IHubContextFactory>();
-            var mockHubContext = new Mock<IHubContext>();
-            var mockClients = new Mock<IHubConnectionContext<dynamic>>();
             dynamic client = new ExpandoObject();
-            client.itemsAdded = new Action<IEnumerable<EntityChange<TestEntity>>>((text) => {
+            var mockClients = new Mock<IHubConnectionContext<dynamic>>();
+            mockClients.Setup(m => m.Client(clientId)).Returns((ExpandoObject)client);
+            var mockHubContext = new Mock<IHubContext>();
+            mockHubContext.Setup(hh => hh.Clients).Returns(mockClients.Object);
+            var mockFactory = new Mock<IHubContextFactory>();
+            mockFactory.Setup(fa => fa.HubContext).Returns(mockHubContext.Object);
+            var mockRequest = new Mock<IRequest>();
+            Hub.Context = new HubCallerContext(mockRequest.Object, clientId);
+            client.itemsAdded = new Action<IEnumerable<EntityChange<TestEntity>>>((changes) => {
                 called = true;
             });
-            mockFactory.Setup(fa => fa.HubContext).Returns(mockHubContext.Object);
-            mockHubContext.Setup(hh => hh.Clients).Returns(mockClients.Object);
-            mockClients.Setup(m => m.Client("1")).Returns((ExpandoObject)client);
-
-            var mockRequest = new Mock<IRequest>();
-            Hub.Context = new HubCallerContext(mockRequest.Object, "1");
 
             var publisher = new Publisher<TestEntity, ChangePublishingSignalRHub>();
             publisher.HubContextFactory = mockFactory.Object;
@@ -53,10 +53,21 @@ namespace ChangePublishingDbContextTest
         {
             var count = 0;
 
-            var publisher = new Publisher<TestEntity, ChangePublishingSignalRHub>();
-            ChangePublishingSignalRHub.Publishers.Add(publisher.Id, publisher);
+            //var publisher = new Publisher<TestEntity, ChangePublishingSignalRHub>();
+            //ChangePublishingSignalRHub.Publishers.Add(publisher.Id, publisher);
+            var publisher = Context.TestEntities.Where(entity => entity.Description.StartsWith("b")).Publisher<ChangePublishingSignalRHub>();
+            /*publisher.h
+            var guid = publisher.Id;
+            Hub.Subscribe(guid.ToString());
 
-            Context.TestEntities.Where(entity => entity.Description.StartsWith("b")).EntitiesChanged += publisher.Publish;
+
+            if (Hub.Publishers.ContainsKey(guid))
+            {
+                var publisher = Hub.Publishers[guid];
+                publisher..ClientIds.Add(Context.ConnectionId);
+            }*/
+
+            //Context.TestEntities.Where(entity => entity.Description.StartsWith("b")).EntitiesChanged += publisher.Publish;
 
             Context.TestEntities.Add(new TestEntity { Key = 1, Description = "b" });
             Context.SaveChanges();

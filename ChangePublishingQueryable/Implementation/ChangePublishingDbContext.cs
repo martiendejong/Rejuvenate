@@ -4,21 +4,29 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.Entity;
-using ChangePublishingDbContext.Implementation;
-using ChangePublishingDbContext;
+using Rejuvenate.Implementation;
+using Rejuvenate;
 using System.Data.Entity.Infrastructure;
 using System.Data.Common;
 using System.Data.Entity.Core.Objects;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public class ChangePublishingDbContext : ADbContextWithCustomDbSet, IChangePublishingDbContext
     {
-        #region ChangeTracker property
+        #region implement IChangePublishingDbContext
 
-        private IEntityChangeTracker _entityChangeTracker;
+        /// <summary>
+        /// Placeholder for the ChangePublisherFactory
+        /// </summary>
+        private IChangesPublisherFactory _changePublisherFactory;
 
-        public IEntityChangeTracker EntityChangeTracker => _entityChangeTracker == null ? _entityChangeTracker = new EntityChangeTracker(this) : _entityChangeTracker;
+        protected IChangesPublisherFactory ChangesPublisherFactory => _changePublisherFactory == null ? _changePublisherFactory = new ChangesPublisherFactory(this) : _changePublisherFactory;
+
+        public IChangesPublisher<EntityType> ChangesPublisher<EntityType>() where EntityType : class, new()
+        {
+            return ChangesPublisherFactory.Entity<EntityType>();
+        }
 
         #endregion
 
@@ -28,7 +36,7 @@ namespace ChangePublishingDbContext
 
         public override IDbSet<EntityType> GetCustomDbSet<EntityType>(DbSet<EntityType> dbSet)
         {
-            return new ChangePublishingDbSet<EntityType>(this, dbSet, EntityChangeTracker.Entity<EntityType>());
+            return new ChangePublishingDbSet<EntityType>(this, dbSet, ChangesPublisherFactory.Entity<EntityType>());
         }
 
         #endregion

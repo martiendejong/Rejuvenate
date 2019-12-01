@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public abstract class ADbContextWithCustomDbSet : DbContext, IDbContextWithCustomDbSet
     {

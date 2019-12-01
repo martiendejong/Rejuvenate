@@ -5,15 +5,15 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using ChangePublishingDbContext;
+using Rejuvenate;
 using System.Data.Entity;
 using Microsoft.AspNet.SignalR.Hubs;
 
-namespace ChangePublishingDbContext
+namespace Rejuvenate
 {
     public class ChangePublishingQueryable<EntityType> : AChangePublishingQueryable<EntityType> where EntityType : class, new()
     {
-        public ChangePublishingQueryable(DbContext db, IQueryable<EntityType> queryable, IConditionalChangeTrackerFactory<EntityType> changeTrackerFactory, IMapChangeTrackerFactory<EntityType> mapChangeTrackerFactory, Expression<Func<EntityType, bool>> expression)
+        public ChangePublishingQueryable(DbContext db, IQueryable<EntityType> queryable, IEntityChangeFilterProcessorFactory<EntityType> changeTrackerFactory, IEntityChangeMappingProcessorFactory<EntityType> mapChangeTrackerFactory, Expression<Func<EntityType, bool>> expression)
             : base(db, queryable, changeTrackerFactory, mapChangeTrackerFactory)
         {
             _filter = expression;
@@ -27,11 +27,11 @@ namespace ChangePublishingDbContext
         {
             add
             {
-                _conditionalChangeTrackerFactory.Where(_filter).EntitiesChanged += value;
+                _filterProcessorFactory.Where(_filter).EntitiesChanged += value;
             }
             remove
             {
-                _conditionalChangeTrackerFactory.Where(_filter).EntitiesChanged -= value;
+                _filterProcessorFactory.Where(_filter).EntitiesChanged -= value;
             }
         }
 
